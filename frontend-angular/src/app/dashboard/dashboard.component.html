@@ -1,0 +1,96 @@
+<!-- AngularApp\echodrop\frontend-angular\src\app\dashboard\dashboard.component.html -->
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Welcome, {{ userData.name || 'User' }}</h1>
+      <p>{{ userData.email || 'user@example.com' }}</p>
+    </div>
+    <button class="logout-btn" (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </header>
+
+  <!-- Dashboard Cards -->
+  <div class="dashboard-grid">
+    <div class="dashboard-card" (click)="goTo('schedule')">
+      <div class="card-content">
+        <h3>🗓️ Schedule a Message</h3>
+        <p>Plan and send your messages at the perfect time</p>
+      </div>
+      <div class="card-arrow">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+
+    <div class="dashboard-card" (click)="goTo('messages')">
+      <div class="card-content">
+        <h3>📩 My Messages</h3>
+        <p>View, edit, and track all your sent messages</p>
+      </div>
+      <div class="card-arrow">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+
+    <div class="dashboard-card" (click)="linkGoogleAccount()">
+      <div class="card-content">
+        <h3>🔗 Link Google Account</h3>
+        <p>Connect your Google account to send emails</p>
+      </div>
+      <div class="card-arrow">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-content">
+        <h3>⚙️ Account Settings</h3>
+        <p>Manage your profile and login options</p>
+      </div>
+      <div class="card-arrow">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- About EchoDrop Section -->
+  <div class="about-section">
+    <h2>About EchoDrop</h2>
+    <div class="about-content">
+      <div class="about-text">
+        <p>EchoDrop is your intelligent messaging platform designed to streamline communication across multiple channels. Our mission is to help you stay connected efficiently.</p>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Messages Sent</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">99%</span>
+            <span class="stat-label">Delivery Rate</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">Support</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="dashboard-footer">
+    <p>© 2025 EchoDrop. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Contact Us</a>
+    </div>
+  </footer>
+</div>
+
+<!-- Loading Overlay -->
+<div *ngIf="loading" class="loading-overlay">
+  <div class="loading-spinner"></div>
+  <p>Loading your dashboard...</p>
+</div>

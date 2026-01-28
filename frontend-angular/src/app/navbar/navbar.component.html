@@ -1,0 +1,39 @@
+<!-- AngularApp\echodrop\frontend-angular\src\app\navbar\navbar.component.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3" *ngIf="showNavbar">
+  <a class="navbar-brand" routerLink="/dashboard">
+    <!-- Combined Logo -->
+    <div class="combined-logo">
+        <div class="combined-icon">
+            <div class="wave wave-4"></div>
+            <div class="wave wave-3"></div>
+            <div class="wave wave-2"></div>
+            <div class="wave wave-1"></div>
+            <div class="center-dot"></div>
+        </div>
+        <div class="combined-text">EchoDrop</div>
+    </div>
+  </a>
+
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+      <!-- Logged out -->
+      <ng-container *ngIf="!isLoggedIn; else loggedIn">
+        <li class="nav-item"><a class="nav-link" routerLink="/login">Login</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/signup">Signup</a></li>
+      </ng-container>
+
+      <!-- Logged in -->
+      <ng-template #loggedIn>
+        <li class="nav-item"><a class="nav-link" routerLink="/dashboard">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/schedule">Schedule Message</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/messages">My Messages</a></li>
+        <li class="nav-item"><a class="nav-link" (click)="logout()">Logout</a></li>
+      </ng-template>
+    </ul>
+  </div>
+</nav>

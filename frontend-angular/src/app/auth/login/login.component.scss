@@ -1,0 +1,231 @@
+// AngularApp\echodrop\frontend-angular\src\app\auth\login\login.component.scss
+/* Text-based Logo */
+        .text-logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 28px;
+            font-weight: 550;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            position: relative;
+        }
+        .text-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2.5px;
+            background: linear-gradient(90deg, transparent 0%, #667eea 20%, #764ba2 80%, transparent 100%);
+            border-radius: 1px;
+        }
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+  margin: 20px;
+}
+
+.auth-logo {
+  text-align: center;
+  margin-bottom: 30px;
+
+  i {
+    font-size: 48px;
+    color: #667eea;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  h1 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+
+  h2 {
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  p {
+    color: #6c757d;
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+.auth-form {
+  margin-bottom: 25px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    &::placeholder {
+      color: #adb5bd;
+    }
+  }
+}
+
+.btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  }
+}
+
+.btn-google {
+  background: white;
+  border: 2px solid #e9ecef;
+  color: #2c3e50;
+
+  &:hover {
+    border-color: #667eea;
+    color: #667eea;
+  }
+
+  img {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.auth-divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e9ecef;
+  }
+
+  span {
+    background: white;
+    padding: 0 15px;
+    position: relative;
+    color: #6c757d;
+    font-size: 14px;
+  }
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 25px;
+
+  p {
+    color: #6c757d;
+    margin: 0;
+
+    a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 30px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-logo {
+    i {
+      font-size: 40px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .auth-header {
+    h2 {
+      font-size: 22px;
+    }
+  }
+}

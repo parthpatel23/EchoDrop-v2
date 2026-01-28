@@ -1,0 +1,30 @@
+# Documents
+documentation/
+
+# Node dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+backend/.google_refresh_token
+
+# OAuth helper scripts (ignored completely)
+backend/debug-refresh.js
+backend/exchange-code.js
+backend/exchange-code.js.example
+
+# Angular cache & build output
+frontend-angular/.angular/
+frontend-angular/README.md
+frontend-angular/dist/
+dist/
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

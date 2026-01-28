@@ -1,0 +1,119 @@
+// AngularApp\echodrop\frontend-angular\src\app\messages\schedule-message\schedule-message.component.scss
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 28px;
+    
+    i {
+      color: #4361ee;
+      margin-right: 10px;
+    }
+  }
+  
+  p {
+    color: #6c757d;
+    font-size: 16px;
+  }
+}
+
+.message-form {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+  margin-bottom: 25px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #4361ee;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+  }
+
+  textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+
+  .btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: white;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+    }
+  }
+
+  .btn-secondary {
+    background: #f8f9fa;
+    color: #6c757d;
+
+    &:hover {
+      background: #e9ecef;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    padding: 15px;
+  }
+  
+  .message-form {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+    }
+  }
+}

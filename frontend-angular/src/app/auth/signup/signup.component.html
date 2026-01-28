@@ -1,0 +1,78 @@
+<!-- AngularApp\echodrop\frontend-angular\src\app\auth\signup\signup.component.html -->
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <i class="fas fa-paper-plane"></i>
+      <!-- Text-based Logo -->
+      <div class="text-logo">EchoDrop</div>
+    </div>
+
+    <div class="auth-header">
+      <h2>Create your account</h2>
+      <p>Join us to start scheduling messages</p>
+    </div>
+
+    <form (ngSubmit)="onSignup()" class="auth-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input
+            type="text"
+            placeholder="Enter your first name"
+            [(ngModel)]="firstName"
+            name="firstName"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Last Name</label>
+          <input
+            type="text"
+            placeholder="Enter your last name"
+            [(ngModel)]="lastName"
+            name="lastName"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input
+          type="email"
+          placeholder="Enter your email"
+          [(ngModel)]="email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input
+          type="password"
+          placeholder="Create a password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+
+    <div class="auth-divider">
+      <span>or</span>
+    </div>
+
+    <button class="btn btn-google" (click)="signupWithGoogle()">
+      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
+      Sign up with Google
+    </button>
+
+    <div class="auth-footer">
+      <p>Already have an account? <a href="/login">Log in</a></p>
+    </div>
+  </div>
+</div>

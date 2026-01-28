@@ -1,0 +1,111 @@
+<!-- AngularApp\echodrop\frontend-angular\src\app\messages\messages-list\messages-list.component.html -->
+<div class="messages-container">
+  <!-- Header -->
+  <div class="messages-header">
+    <h1><i class="fas fa-envelope-open-text"></i> Your Scheduled Messages</h1>
+    <p>View, edit, and track all your sent messages</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <h3>Filter by status:</h3>
+    <div class="filter-buttons">
+      <button *ngFor="let status of statuses"
+              class="filter-btn"
+              [class.active]="selectedStatus === status"
+              (click)="filterByStatus(status)">
+        {{ status | titlecase }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading messages...</p>
+  </div>
+
+  <!-- Messages Table -->
+  <div *ngIf="!loading && messages.length > 0" class="table-container">
+    <table class="messages-table">
+      <thead>
+        <tr>
+          <th>Recipient</th>
+          <th>Platform</th>
+          <th>Content</th>
+          <th>Scheduled Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let msg of messages">
+          <td class="recipient">{{ msg.recipient }}</td>
+          <td class="platform">{{ msg.platform | titlecase }}</td>
+          <td class="content">{{ msg.content }}</td>
+          <td class="scheduled-time">{{ msg.scheduledTime | date:'medium' }}</td>
+          <td class="status">
+            <span class="status-badge" [class]="'status-' + msg.status">
+              {{ msg.status | titlecase }}
+            </span>
+          </td>
+          <td class="actions">
+            <button class="btn-action" (click)="openEdit(msg)" [disabled]="msg.status !== 'pending'" title="Edit">
+              <i class="fas fa-edit">Edit</i>
+            </button>
+            <button class="btn-action" (click)="viewLogs(msg)" title="View Logs">
+              <i class="fas fa-history">Logs</i>
+            </button>
+            <button class="btn-action btn-danger" (click)="cancelMessage(msg._id)" [disabled]="msg.status !== 'pending'" title="Cancel">
+              <i class="fas fa-times">Cancel</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && messages.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="fas fa-inbox"></i>
+    </div>
+    <h3>No messages found</h3>
+    <p>You don't have any {{ selectedStatus !== 'all' ? selectedStatus : '' }} messages yet.</p>
+    <button class="btn-primary" (click)="goTo('schedule')">
+      <i class="fas fa-plus"></i> Schedule Your First Message
+    </button>
+  </div>
+
+  <!-- Edit Modal -->
+  <div *ngIf="showEdit" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Edit Message</h3>
+        <button class="modal-close" (click)="closeEdit()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Edit form would go here -->
+        <p>Edit form implementation would be here...</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeEdit()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs Modal -->
+  <div *ngIf="showLogs" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Message Delivery Logs</h3>
+        <button class="modal-close" (click)="closeLogs()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Logs content would go here -->
+        <p>Logs implementation would be here...</p>
+      </div>
+    </div>
+  </div>
+</div>
