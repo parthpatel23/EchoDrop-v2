@@ -1,0 +1,33 @@
+<!-- AngularApp\EchoDrop-v2\frontend-angular\src\app\help-assistant\help-assistant.component.html -->
+<div class="assistant-container" [class.open]="isOpen">
+  <!-- Floating button -->
+  <button class="assistant-toggle" (click)="toggleOpen()">
+    ?
+  </button>
+
+  <!-- Chat panel -->
+  <div class="assistant-panel" *ngIf="isOpen">
+    <div class="assistant-header">
+      <div class="title">EchoDrop Assistant</div>
+      <button class="close-btn" (click)="toggleOpen()">×</button>
+    </div>
+
+    <div class="assistant-body">
+      <div *ngFor="let msg of messages" [ngClass]="['msg', msg.from]">
+        <div class="bubble">
+          {{ msg.text }}
+        </div>
+      </div>
+    </div>
+
+    <form class="assistant-input" (ngSubmit)="sendMessage()">
+      <input
+        type="text"
+        [(ngModel)]="userInput"
+        name="userInput"
+        placeholder="Ask a question..."
+        autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div>

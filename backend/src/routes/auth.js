@@ -166,12 +166,49 @@ router.get("/me", async (req, res) => {
       name: user.name,
       email: user.email,
       profilePicture: user.profilePicture,
-      // Optionally, send a flag if Google is linked
-      isGoogleLinked: !!user.googleId
+      defaultChannel: user.defaultChannel || 'email',
+      googleLinked: !!user.googleRefreshToken,   // ✅ based on refresh token
+      // ✅ Telegram is considered globally configured, not per-user
+      telegramLinked: !!process.env.TELEGRAM_BOT_TOKEN && !!process.env.TELEGRAM_ADMIN_CHAT_ID,
     });
   } catch (err) {
     console.error("GET /auth/me error:", err.message);
     res.status(401).json({ msg: "Invalid token" });
+  }
+});
+
+// Update profile (name, preferences)
+router.put('/profile', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { name, defaultChannel } = req.body;
+
+    const allowedChannels = ['email', 'sms', 'whatsapp'];
+    if (defaultChannel && !allowedChannels.includes(defaultChannel)) {
+      return res.status(400).json({ msg: 'Invalid defaultChannel' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    if (name !== undefined) user.name = name;
+    if (defaultChannel !== undefined) user.defaultChannel = defaultChannel;
+
+    await user.save();
+
+    res.json({
+      msg: 'Profile updated',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        defaultChannel: user.defaultChannel,
+        // include other safe fields if you want
+      }
+    });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 });
 

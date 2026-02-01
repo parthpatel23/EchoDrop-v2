@@ -1,29 +1,49 @@
-// AngularApp\echodrop\frontend-angular\src\styles.scss
+// AngularApp\EchoDrop-v2\frontend-angular\src\styles.scss
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+// body {
+//   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+//   background-color: #f8f9fa;
+//   color: #2c3e50;
+//   line-height: 1.6;
+// }
+
+/* Custom Variables */
+// :root {
+//   --primary: #667eea;
+//   --secondary: #764ba2;
+//   --success: #28a745;
+//   --danger: #dc3545;
+//   --warning: #ffc107;
+//   --info: #17a2b8;
+//   --light: #f8f9fa;
+//   --dark: #2c3e50;
+//   --gray: #6c757d;
+//   --border: #e9ecef;
+// }
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #2c3e50;
+  background-color: #f3f4f6;   // light neutral
+  color: var(--dark);
   line-height: 1.6;
 }
 
-/* Custom Variables */
 :root {
-  --primary: #667eea;
-  --secondary: #764ba2;
-  --success: #28a745;
-  --danger: #dc3545;
-  --warning: #ffc107;
-  --info: #17a2b8;
-  --light: #f8f9fa;
-  --dark: #2c3e50;
-  --gray: #6c757d;
-  --border: #e9ecef;
+  --primary:   #4f46e5;  // indigo-600
+  --secondary: #7c3aed;  // violet-600
+  --success:   #22c55e;
+  --danger:    #ef4444;
+  --warning:   #facc15;
+  --info:      #0ea5e9;
+  --light:     #f9fafb;
+  --dark:      #111827;
+  --gray:      #6b7280;
+  --border:    #e5e7eb;
 }
 
 /* Utility Classes */
@@ -91,4 +111,16 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+/* Global app layout */
+.app-main {
+  min-height: calc(100vh - 60px); /* below navbar */
+  padding: 16px 0 32px;
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding: 12px 0 20px;
+  }
 }

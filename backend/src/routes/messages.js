@@ -12,23 +12,34 @@ router.post("/create", requireAuth, async (req, res) => {
     const { recipient, platform, content, scheduledTime, subject, meta } = req.body;
 
     // basic validation
-    if (!recipient || !platform || !content || !scheduledTime) {
-      return res.status(400).json({ msg: "recipient, platform, content and scheduledTime are required" });
+    if (!platform || !content || !scheduledTime) {
+      return res.status(400).json({
+        msg: "platform, content and scheduledTime are required",
+      });
+    }
+
+    // recipient required only for non-telegram
+    if (platform !== "telegram" && !recipient) {
+      return res.status(400).json({
+        msg: "recipient is required for email, sms and whatsapp",
+      });
     }
 
     const date = new Date(scheduledTime);
-    if (isNaN(date.getTime())) return res.status(400).json({ msg: "Invalid scheduledTime" });
+    if (isNaN(date.getTime())) {
+      return res.status(400).json({ msg: "Invalid scheduledTime" });
+    }
 
     if (date < new Date()) {
       return res.status(400).json({ msg: "scheduledTime must be in the future" });
     }
 
-    // Save senderEmail for convenience (frontend has user's email in req.user)
+    // Save senderEmail for convenience
     const senderEmail = req.user?.email || null;
 
     const newMessage = await ScheduledMessage.create({
       createdBy: req.user._id,
-      senderEmail,             // <-- added
+      senderEmail,
       recipient,
       platform,
       subject,

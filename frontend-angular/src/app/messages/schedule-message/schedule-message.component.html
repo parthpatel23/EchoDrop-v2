@@ -1,47 +1,120 @@
-<!-- AngularApp\echodrop\frontend-angular\src\app\messages\schedule-message\schedule-message.component.html -->
-<div class="form-container">
-  <div class="form-header">
-    <h2><i class="fas fa-clock"></i> Schedule a Message</h2>
-    <p>Plan and send your messages at the perfect time</p>
+<!-- AngularApp\EchoDrop-v2\frontend-angular\src\app\messages\schedule-message\schedule-message.component.html -->
+<div class="schedule-page">
+  <div class="schedule-card">
+    <!-- Header row -->
+    <div class="schedule-header">
+      <div>
+        <h1>Schedule</h1>
+        <p>Choose a channel, write your message, and pick a time.</p>
+      </div>
+      <div class="mode-chip" [class.reminder]="mode === 'reminder'">
+        {{ mode === 'message' ? 'Send to others' : 'Personal reminder' }}
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button type="button" class="tab" [class.active]="mode === 'message'" (click)="setMode('message')">
+        Messages
+      </button>
+      <button type="button" class="tab" [class.active]="mode === 'reminder'" (click)="setMode('reminder')">
+        Telegram Reminders
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="schedule-form">
+      <!-- MODE: Scheduled Messages -->
+      <ng-container *ngIf="mode === 'message'; else reminderMode">
+        <div class="form-group">
+          <label>Message template</label>
+          <select name="messageTemplate" class="form-control"
+            (change)="applyTemplate('message', $any($event.target).value)">
+            <option value="">None</option>
+            <option *ngFor="let t of messageTemplates" [value]="t.id">
+              {{ t.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Recipient</label>
+            <input [(ngModel)]="message.recipient" name="recipient" class="form-control" [required]="mode === 'message'"
+              placeholder="Email or phone number" />
+            <small class="error" *ngIf="mode === 'message' && !isRecipientValid() && message.recipient">
+              Please enter a valid email or E.164 phone number.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Platform</label>
+            <select [(ngModel)]="message.platform" name="platform" class="form-control" required>
+              <option value="email">Email</option>
+              <option value="sms">SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="message.platform === 'email'">
+          <label>Subject</label>
+          <input [(ngModel)]="message.subject" name="subject" class="form-control" placeholder="Optional subject" />
+        </div>
+      </ng-container>
+
+      <!-- MODE: Telegram Reminders -->
+      <ng-template #reminderMode>
+        <input type="hidden" [(ngModel)]="message.platform" name="platform" />
+
+        <div class="form-group">
+          <label>Reminder template</label>
+          <select name="reminderTemplate" class="form-control"
+            (change)="applyTemplate('reminder', $any($event.target).value)">
+            <option value="">None</option>
+            <option *ngFor="let t of reminderTemplates" [value]="t.id">
+              {{ t.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Title (optional)</label>
+          <input [(ngModel)]="message.subject" name="subjectReminder" class="form-control"
+            placeholder="Short reminder title" />
+        </div>
+
+        <div class="small-note">
+          Telegram reminders are sent to your own bot chat.
+        </div>
+      </ng-template>
+
+      <!-- Shared fields -->
+      <div class="form-group">
+        <label>Message content</label>
+        <textarea [(ngModel)]="message.content" name="content" class="form-control" rows="4"
+          placeholder="Type your message..." required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Schedule time</label>
+          <input type="datetime-local" [(ngModel)]="message.scheduledTime" name="scheduledTime" class="form-control"
+            required />
+        </div>
+        <div class="form-group hint">
+          <label>&nbsp;</label>
+          <p>Time must be in the future. Scheduler runs every minute.</p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="goTo('dashboard')">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {{ mode === 'message' ? 'Schedule message' : 'Schedule reminder' }}
+        </button>
+      </div>
+    </form>
   </div>
-
-  <form (ngSubmit)="onSubmit()" class="message-form">
-    <div class="form-group">
-      <label>Recipient</label>
-      <input [(ngModel)]="message.recipient" name="recipient" class="form-control" required 
-             placeholder="Email or phone number" />
-    </div>
-
-    <div class="form-group">
-      <label>Platform</label>
-      <select [(ngModel)]="message.platform" name="platform" class="form-control" required>
-        <option value="email">Email</option>
-        <option value="sms">SMS</option>
-        <option value="whatsapp">WhatsApp</option>
-      </select>
-    </div>
-
-    <div class="form-group" *ngIf="message.platform === 'email'">
-      <label>Subject</label>
-      <input [(ngModel)]="message.subject" name="subject" class="form-control" 
-             placeholder="Message subject (optional)" />
-    </div>
-
-    <div class="form-group">
-      <label>Message Content</label>
-      <textarea [(ngModel)]="message.content" name="content" class="form-control" rows="5" 
-                placeholder="Type your message here..." required></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Schedule Time</label>
-      <input type="datetime-local" [(ngModel)]="message.scheduledTime" name="scheduledTime" 
-             class="form-control" required />
-    </div>
-
-    <div class="form-actions">
-      <button type="button" class="btn btn-secondary" (click)="goTo('dashboard')">Cancel</button>
-      <button type="submit" class="btn btn-primary">Schedule Message</button>
-    </div>
-  </form>
 </div>

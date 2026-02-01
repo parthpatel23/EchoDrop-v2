@@ -1,6 +1,7 @@
 // AngularApp/echodrop/backend/src/services/sendMessage.js
 import { google } from 'googleapis';
 import twilio from 'twilio';
+import axios from 'axios';
 import User from '../models/User.js'; // adjust if file path differs
 
 // Twilio client (unchanged)
@@ -23,6 +24,8 @@ export default async function sendMessage(msg) {
       return sendSms(msg);
     case 'whatsapp':
       return sendWhatsapp(msg);
+    case 'telegram':
+      return sendTelegram(msg);
     default:
       throw new Error('Unsupported platform: ' + msg.platform);
   }
@@ -102,4 +105,26 @@ async function sendWhatsapp(msg) {
   });
 
   console.log('✅ WhatsApp sent to', recipient);
+}
+
+// ---------- Telegram (personal reminders) ----------
+async function sendTelegram(msg) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID; // for demo: your own chat
+
+  if (!token || !chatId) {
+    throw new Error('Telegram not configured (missing TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID)');
+  }
+
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  const text = msg.content || msg.subject || 'Message from EchoDrop (Telegram)';
+
+  console.log('[Telegram] Sending message:', { chatId, text });
+
+  await axios.post(url, {
+    chat_id: chatId,
+    text,
+  });
+
+  console.log('✅ Telegram message sent to chat', chatId);
 }

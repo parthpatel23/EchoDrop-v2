@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  isCollapsed = true;
   showNavbar: boolean = true;
   isLoggedIn: boolean = false;
   private authSubscription!: Subscription;

@@ -1,0 +1,171 @@
+/* AngularApp\EchoDrop-v2\frontend-angular\src\app\account-settings\account-settings.scss */
+
+.settings-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 22px 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--border);
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 650;
+  color: var(--dark);
+}
+
+.subtitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.info {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 10px;
+}
+
+.info.error {
+  color: #b91c1c;
+}
+
+.info.success {
+  color: #166534;
+}
+
+.settings-form {
+  margin-top: 8px;
+}
+
+.section {
+  margin-bottom: 18px;
+}
+
+.section h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.field {
+  margin-bottom: 10px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--dark);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  background: #f9fafb;
+  transition: all 0.18s ease;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
+  background: #ffffff;
+}
+
+.field input[disabled] {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.linked-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--gray);
+  }
+}
+
+.status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-pill.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.small-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .settings-card {
+    padding: 18px 14px 20px;
+  }
+}

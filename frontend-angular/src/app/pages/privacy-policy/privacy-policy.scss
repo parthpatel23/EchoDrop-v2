@@ -1,0 +1,62 @@
+/* src/app/pages/privacy-policy/privacy-policy.scss */
+
+.page-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
+}
+
+.page-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 22px 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--border);
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 650;
+  color: var(--dark);
+}
+
+.intro {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--gray);
+}
+
+section {
+  margin-bottom: 16px;
+}
+
+section h2 {
+  font-size: 16px;
+  margin: 0 0 4px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+section p,
+section ul {
+  font-size: 14px;
+  color: #374151;
+}
+
+ul {
+  padding-left: 18px;
+}
+
+.last-updated {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .page-card {
+    padding: 18px 14px 20px;
+  }
+}

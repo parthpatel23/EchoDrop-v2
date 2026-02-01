@@ -13,9 +13,9 @@ export class AuthService {
   isLoggedIn$ = this.loggedIn.asObservable();
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: any // ✅ Inject platformId
-  ) {}
+  ) { }
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId); // ✅ Use Angular's function
@@ -60,6 +60,10 @@ export class AuthService {
 
   getCurrentUser(): Observable<any> {
     return this.http.get(`${this.API_URL}/auth/me`);
+  }
+
+  updateProfile(data: any): Observable<any> {
+    return this.http.put(`${this.API_URL}/auth/profile`, data);
   }
 
   isLoggedIn(): boolean {

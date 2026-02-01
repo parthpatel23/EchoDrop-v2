@@ -1,13 +1,13 @@
-// AngularApp\echodrop\frontend-angular\src\app\dashboard\dashboard.component.ts
+// AngularApp\EchoDrop-v2\frontend-angular\src\app\dashboard\dashboard.component.ts
 import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -21,8 +21,8 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    @Inject(PLATFORM_ID) private platformId: any // Change from object to any
-  ) {}
+    @Inject(PLATFORM_ID) private platformId: any
+  ) { }
 
   ngOnInit() {
     // Use Angular's proper platform detection
@@ -49,6 +49,11 @@ export class DashboardComponent implements OnInit {
       next: (data) => {
         console.log('Fetched user data:', data);
         this.userData = data || {};
+        try {
+          localStorage.setItem('userInfo', JSON.stringify(this.userData));
+        } catch (e) {
+          console.warn('Failed to cache user info in localStorage', e);
+        }
         this.loading = false;
         this.cdr.detectChanges();
         this.checkForLinkingMessages();

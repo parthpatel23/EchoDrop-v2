@@ -1,0 +1,81 @@
+<!-- AngularApp\EchoDrop-v2\frontend-angular\src\app\account-settings\account-settings.html -->
+<div class="settings-page">
+    <div class="settings-card">
+        <h1>Account Settings</h1>
+        <p class="subtitle">Manage your profile and preferences in EchoDrop.</p>
+
+        <div *ngIf="loading" class="info">Loading account details...</div>
+        <div *ngIf="!loading && error" class="info error">{{ error }}</div>
+
+        <form *ngIf="!loading && !error" (ngSubmit)="onSave()" class="settings-form">
+            <!-- Profile -->
+            <section class="section">
+                <h2>Profile</h2>
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" [(ngModel)]="form.name" name="name" placeholder="Your display name" required />
+                </div>
+
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" [value]="user.email || ''" disabled />
+                    <small class="hint">Email cannot be changed.</small>
+                </div>
+            </section>
+
+            <!-- Preferences -->
+            <section class="section">
+                <h2>Preferences</h2>
+                <div class="field">
+                    <label>Default channel for new messages</label>
+                    <select [(ngModel)]="form.defaultChannel" name="defaultChannel">
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                        <option value="whatsapp">WhatsApp</option>
+                    </select>
+                    <small class="hint">
+                        Used as the preselected platform when scheduling a new message.
+                    </small>
+                </div>
+            </section>
+
+            <!-- Linked services (read-only) -->
+            <section class="section">
+                <h2>Linked services</h2>
+
+                <div class="linked-row">
+                    <div>
+                        <strong>Google account</strong>
+                        <p>Used to send emails via Gmail.</p>
+                    </div>
+                    <span class="status-pill" [class.ok]="googleLinked">
+                        {{ googleLinked ? 'Linked' : 'Not linked' }}
+                    </span>
+                </div>
+
+                <div class="linked-row">
+                    <div>
+                        <strong>Telegram</strong>
+                        <p>Used for personal Telegram reminders.</p>
+                    </div>
+                    <span class="status-pill" [class.ok]="telegramLinked">
+                        {{ telegramLinked ? 'Connected' : 'Not connected' }}
+                    </span>
+                </div>
+
+                <p class="small-note">
+                    To link or manage these services, use the options on your dashboard.
+                </p>
+            </section>
+
+            <!-- Actions -->
+            <div class="actions">
+                <button type="submit" class="btn btn-primary" [disabled]="saving">
+                    {{ saving ? 'Saving...' : 'Save changes' }}
+                </button>
+            </div>
+
+            <div *ngIf="success" class="info success">{{ success }}</div>
+        </form>
+    </div>
+</div>

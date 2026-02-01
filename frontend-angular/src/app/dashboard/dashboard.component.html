@@ -1,4 +1,4 @@
-<!-- AngularApp\echodrop\frontend-angular\src\app\dashboard\dashboard.component.html -->
+<!-- AngularApp\EchoDrop-v2\frontend-angular\src\app\dashboard\dashboard.component.html -->
 <div class="dashboard-container">
   <!-- Header Section -->
   <header class="dashboard-header">
@@ -6,9 +6,6 @@
       <h1>Welcome, {{ userData.name || 'User' }}</h1>
       <p>{{ userData.email || 'user@example.com' }}</p>
     </div>
-    <button class="logout-btn" (click)="logout()">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </button>
   </header>
 
   <!-- Dashboard Cards -->
@@ -43,10 +40,10 @@
       </div>
     </div>
 
-    <div class="dashboard-card">
+    <div class="dashboard-card" (click)="goTo('account')">
       <div class="card-content">
         <h3>⚙️ Account Settings</h3>
-        <p>Manage your profile and login options</p>
+        <p>Manage your profile and preferences</p>
       </div>
       <div class="card-arrow">
         <i class="fas fa-chevron-right"></i>
@@ -80,11 +77,11 @@
 
   <!-- Footer -->
   <footer class="dashboard-footer">
-    <p>© 2025 EchoDrop. All rights reserved.</p>
+    <p>© 2026 EchoDrop. All rights reserved.</p>
     <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Contact Us</a>
+      <a routerLink="/privacy-policy">Privacy Policy</a>
+      <a routerLink="/terms">Terms &amp; Conditions</a>
+      <a routerLink="/contact">Contact Us</a>
     </div>
   </footer>
 </div>

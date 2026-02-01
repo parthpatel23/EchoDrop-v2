@@ -1,4 +1,4 @@
-// AngularApp\echodrop\backend\src\index.js
+// AngularApp\Echodrop-v2\backend\src\index.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
@@ -20,9 +20,13 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:4200",
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  credentials: false
+  origin: [
+    "http://localhost:4200",              // local Angular dev
+    "https://your-firebase-app.web.app",  // ✅ replace with your real Firebase Hosting URL
+    "https://your-firebase-app.firebaseapp.com"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: false   // you use JWT in Authorization header, so cookies not needed
 }));
 app.use(passport.initialize());
 

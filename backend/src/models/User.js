@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String, // only for manual login
+  defaultChannel: {
+    type: String,
+    enum: ['email', 'sms', 'whatsapp'],
+    default: 'email'
+  },
   googleId: { type: String, sparse: true, unique: true },
   profilePicture: String,
   googleAccessToken: String, // New field for Google API access token
