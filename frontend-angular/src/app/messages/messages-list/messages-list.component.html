@@ -1,4 +1,4 @@
-<!-- AngularApp\EchoDrop-v2\frontend-angular\src\app\messages\messages-list\messages-list.component.html -->
+<!-- AngularApp/EchoDrop-v2/frontend-angular/src/app/messages/messages-list/messages-list.component.html -->
 <div class="messages-container">
   <!-- Header -->
   <div class="messages-header">
@@ -10,8 +10,12 @@
   <div class="filters-section">
     <h3>Filter by status:</h3>
     <div class="filter-buttons">
-      <button *ngFor="let status of statuses" class="filter-btn" [class.active]="selectedStatus === status"
-        (click)="filterByStatus(status)">
+      <button
+        *ngFor="let status of statuses"
+        class="filter-btn"
+        [class.active]="selectedStatus === status"
+        (click)="filterByStatus(status)"
+      >
         {{ status | titlecase }}
       </button>
     </div>
@@ -38,7 +42,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let msg of messages">
-          <td class="recipient">{{ msg.recipient }}</td>
+          <td class="recipient">{{ msg.recipient || '—' }}</td>
           <td class="platform">
             <span class="platform-pill platform-{{ msg.platform }}">
               {{ msg.platform | titlecase }}
@@ -47,22 +51,34 @@
           <td class="content" [title]="msg.content">
             {{ msg.content }}
           </td>
-          <td class="scheduled-time">{{ msg.scheduledTime | date:'medium' }}</td>
+          <td class="scheduled-time">{{ msg.scheduledTime | date: 'medium' }}</td>
           <td class="status">
             <span class="status-badge" [class]="'status-' + msg.status">
               {{ msg.status | titlecase }}
             </span>
           </td>
           <td class="actions">
-            <button class="btn-action" (click)="openEdit(msg)" [disabled]="msg.status !== 'pending'" title="Edit">
-              <i class="fas fa-edit">Edit</i>
+            <button
+              class="btn-action"
+              (click)="openEdit(msg)"
+              [disabled]="msg.status !== 'pending'"
+              title="Edit message"
+            >
+              <i class="fas fa-edit"></i>
+              <span>Edit</span>
             </button>
-            <button class="btn-action" (click)="viewLogs(msg)" title="View Logs">
-              <i class="fas fa-history">Logs</i>
+            <button class="btn-action" (click)="viewLogs(msg)" title="View delivery logs">
+              <i class="fas fa-history"></i>
+              <span>Logs</span>
             </button>
-            <button class="btn-action btn-danger" (click)="cancelMessage(msg._id)" [disabled]="msg.status !== 'pending'"
-              title="Cancel">
-              <i class="fas fa-times">Cancel</i>
+            <button
+              class="btn-action btn-danger"
+              (click)="cancelMessage(msg._id)"
+              [disabled]="msg.status !== 'pending'"
+              title="Cancel message"
+            >
+              <i class="fas fa-times"></i>
+              <span>Cancel</span>
             </button>
           </td>
         </tr>
@@ -82,110 +98,217 @@
     </button>
   </div>
 
-  <!-- Edit Modal -->
-  <div *ngIf="showEdit" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Edit Message</h3>
-        <button class="modal-close" (click)="closeEdit()">&times;</button>
+  <!-- ====================== EDIT MODAL ====================== -->
+  <div *ngIf="showEdit" class="ed-modal-overlay">
+    <div class="ed-modal ed-modal--wide">
+      <div class="ed-modal__header">
+        <div class="ed-modal__title">
+          <span class="ed-modal__icon ed-modal__icon--edit">
+            <i class="fas fa-edit"></i>
+          </span>
+          <div>
+            <h3>Edit Scheduled Message</h3>
+            <p class="ed-modal__subtitle">
+              Update recipient, content, or scheduled time for this pending message.
+            </p>
+          </div>
+        </div>
+        <button class="ed-modal__close-btn" type="button" (click)="closeEdit()">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
 
-      <!-- Use a form so we can validate and submit cleanly -->
-      <form (ngSubmit)="saveEdit()" #editForm="ngForm">
-        <div class="modal-body">
-          <!-- Recipient -->
-          <div class="form-group">
-            <label for="edit-recipient">Recipient</label>
-            <input id="edit-recipient" type="text" class="form-control" name="recipient"
-              [(ngModel)]="editModel.recipient" required />
-          </div>
+      <form (ngSubmit)="saveEdit()" #editForm="ngForm" novalidate>
+        <div class="ed-modal__body">
+          <div class="ed-modal__section">
+            <h4 class="ed-modal__section-title">Message Details</h4>
+            <div class="ed-modal__grid">
+              <!-- Recipient -->
+              <div class="form-group">
+                <label for="edit-recipient">Recipient</label>
+                <input
+                  id="edit-recipient"
+                  type="text"
+                  class="form-control"
+                  name="recipient"
+                  [(ngModel)]="editModel.recipient"
+                  [required]="editModel.platform !== 'telegram'"
+                  placeholder="name@example.com / phone / username"
+                />
+                <small class="hint" *ngIf="editModel.platform === 'telegram'">
+                  Optional for Telegram messages.
+                </small>
+              </div>
 
-          <!-- Platform (read-only display) -->
-          <div class="form-group">
-            <label>Platform</label>
-            <div class="platform-pill platform-{{ editModel.platform }}">
-              {{ editModel.platform | titlecase }}
+              <!-- Platform (read-only) -->
+              <div class="form-group">
+                <label>Platform</label>
+                <div class="platform-pill platform-{{ editModel.platform }}">
+                  <i
+                    class="fas"
+                    [ngClass]="{
+                      'fa-envelope': editModel.platform === 'email',
+                      'fa-sms': editModel.platform === 'sms',
+                      'fa-whatsapp': editModel.platform === 'whatsapp',
+                      'fa-telegram': editModel.platform === 'telegram'
+                    }"
+                  ></i>
+                  <span>{{ editModel.platform | titlecase }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject (only for email) -->
+            <div class="form-group" *ngIf="editModel.platform === 'email'">
+              <label for="edit-subject">Subject</label>
+              <input
+                id="edit-subject"
+                type="text"
+                class="form-control"
+                name="subject"
+                [(ngModel)]="editModel.subject"
+                placeholder="Subject line"
+              />
+            </div>
+
+            <!-- Content -->
+            <div class="form-group">
+              <label for="edit-content">Message Content</label>
+              <textarea
+                id="edit-content"
+                class="form-control"
+                name="content"
+                rows="5"
+                [(ngModel)]="editModel.content"
+                required
+                placeholder="Type the message your recipient will receive..."
+              ></textarea>
+              <div class="hint-row">
+                <small class="hint">Use clear, concise language.</small>
+                <small class="hint">{{ editModel.content.length || 0 }} chars</small>
+              </div>
             </div>
           </div>
 
-          <!-- Subject (only for email) -->
-          <div class="form-group" *ngIf="editModel.platform === 'email'">
-            <label for="edit-subject">Subject</label>
-            <input id="edit-subject" type="text" class="form-control" name="subject" [(ngModel)]="editModel.subject" />
-          </div>
-
-          <!-- Content -->
-          <div class="form-group">
-            <label for="edit-content">Content</label>
-            <textarea id="edit-content" class="form-control" name="content" rows="4" [(ngModel)]="editModel.content"
-              required></textarea>
-          </div>
-
-          <!-- Scheduled time (local) -->
-          <div class="form-group">
-            <label for="edit-scheduled-time">Scheduled Time</label>
-            <input id="edit-scheduled-time" type="datetime-local" class="form-control" name="scheduledTimeLocal"
-              [(ngModel)]="editModel.scheduledTimeLocal" required />
-            <small class="hint">Times are shown in your local timezone.</small>
+          <div class="ed-modal__section">
+            <h4 class="ed-modal__section-title">Schedule</h4>
+            <div class="form-group">
+              <label for="edit-scheduled-time">Scheduled Time</label>
+              <input
+                id="edit-scheduled-time"
+                type="datetime-local"
+                class="form-control"
+                name="scheduledTimeLocal"
+                [(ngModel)]="editModel.scheduledTimeLocal"
+                required
+              />
+              <small class="hint">
+                Times are shown in your local timezone. Must be in the future.
+              </small>
+            </div>
           </div>
         </div>
 
-        <div class="modal-footer">
+        <div class="ed-modal__footer">
           <button type="button" class="btn btn-secondary" (click)="closeEdit()">
             Cancel
           </button>
           <button type="submit" class="btn btn-primary" [disabled]="saving || editForm.invalid">
-            {{ saving ? 'Saving...' : 'Save Changes' }}
+            <span *ngIf="!saving">
+              <i class="fas fa-save"></i> Save Changes
+            </span>
+            <span *ngIf="saving">
+              <i class="fas fa-spinner fa-spin"></i> Saving…
+            </span>
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Logs Modal -->
-  <div *ngIf="showLogs" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Message Delivery Logs</h3>
-        <button class="modal-close" (click)="closeLogs()">&times;</button>
+  <!-- ====================== LOGS MODAL ====================== -->
+  <div *ngIf="showLogs" class="ed-modal-overlay">
+    <div class="ed-modal ed-modal--logs">
+      <div class="ed-modal__header">
+        <div class="ed-modal__title">
+          <span class="ed-modal__icon ed-modal__icon--logs">
+            <i class="fas fa-history"></i>
+          </span>
+          <div>
+            <h3>Message Delivery Logs</h3>
+            <p class="ed-modal__subtitle">
+              See when this message was processed, sent, or if any errors occurred.
+            </p>
+          </div>
+        </div>
+        <button class="ed-modal__close-btn" type="button" (click)="closeLogs()">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
 
-      <div class="modal-body">
+      <div class="ed-modal__body">
         <!-- Loading state -->
-        <div *ngIf="logsLoading" class="loading-state">
-          <div class="loading-spinner"></div>
-          <p>Loading logs...</p>
+        <div *ngIf="logsLoading" class="logs-loading">
+          <div class="loading-spinner small"></div>
+          <p>Loading delivery history…</p>
         </div>
 
         <!-- Empty state -->
-        <div *ngIf="!logsLoading && logs.length === 0" class="empty-state">
-          <p>No logs found for this message yet.</p>
+        <div *ngIf="!logsLoading && logs.length === 0" class="logs-empty">
+          <i class="fas fa-clipboard-list"></i>
+          <h4>No logs yet</h4>
+          <p>This message has not produced any delivery events yet.</p>
         </div>
 
         <!-- Logs table -->
-        <table *ngIf="!logsLoading && logs.length > 0" class="logs-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Status</th>
-              <th>Error</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let log of logs">
-              <td>{{ log.timestamp | date:'medium' }}</td>
-              <td>
-                <span class="status-badge" [ngClass]="{
-                  'status-sent': log.status === 'sent',
-                  'status-failed': log.status === 'failed'
-                }">
-                  {{ log.status | titlecase }}
-                </span>
-              </td>
-              <td>{{ log.error || '-' }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div *ngIf="!logsLoading && logs.length > 0" class="logs-table-wrapper">
+          <table class="logs-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Error Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let log of logs">
+                <td>{{ log.timestamp | date: 'medium' }}</td>
+                <td>
+                  <span
+                    class="log-status-chip"
+                    [ngClass]="{
+                      'log-status-chip--sent': log.status === 'sent',
+                      'log-status-chip--failed': log.status === 'failed'
+                    }"
+                  >
+                    <i
+                      class="fas"
+                      [ngClass]="{
+                        'fa-check-circle': log.status === 'sent',
+                        'fa-exclamation-circle': log.status === 'failed'
+                      }"
+                    ></i>
+                    {{ log.status | titlecase }}
+                  </span>
+                </td>
+                <td>
+                  <span class="log-error" [class.log-error--empty]="!log.error">
+                    {{ log.error || 'No error information.' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="logs-footnote">
+            Latest events appear first. Timestamps are shown in your local timezone.
+          </p>
+        </div>
+      </div>
+
+      <div class="ed-modal__footer ed-modal__footer--right">
+        <button type="button" class="btn btn-secondary" (click)="closeLogs()">
+          Close
+        </button>
       </div>
     </div>
   </div>

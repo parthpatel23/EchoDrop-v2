@@ -1,4 +1,4 @@
-// AngularApp\EchoDrop-v2\frontend-angular\src\app\messages\messages-list\messages-list.component.ts
+// AngularApp/EchoDrop-v2/frontend-angular/src/app/messages/messages-list/messages-list.component.ts
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ import { filter } from 'rxjs/operators';
 type Message = {
   _id: string;
   recipient: string;
-  platform: 'email' | 'sms' | 'whatsapp';
+  platform: 'email' | 'sms' | 'whatsapp' | 'telegram';
   subject?: string;
   content: string;
   scheduledTime: string;
@@ -47,13 +47,24 @@ export class MessagesListComponent implements OnInit, OnDestroy {
 
   // Filters
   selectedStatus: string = 'all';
-  statuses = ['all', 'pending', 'sent', 'failed', 'cancelled'];
+  statuses = ['all', 'pending', 'processing', 'sent', 'failed', 'cancelled'];
 
   // Logs modal state
   showLogs = false;
   logsLoading = false;
   logs: LogEntry[] = [];
   logsForId: string | null = null;
+
+  // Edit modal state
+  editId: string | null = null;
+  showEdit = false;
+  editModel = {
+    recipient: '',
+    platform: 'email' as 'email' | 'sms' | 'whatsapp' | 'telegram',
+    subject: '',
+    content: '',
+    scheduledTimeLocal: ''
+  };
 
   private refreshInterval: any;
   private routerSubscription: any;
@@ -62,7 +73,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadMessages();
@@ -178,8 +189,9 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     this.showLogs = true;
     this.logsLoading = true;
 
+    // Backend route: GET /messages/:id/logs
     this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/${msg._id}/logs`).subscribe({
-        next: (res) => {
+      next: (res) => {
         console.log('Logs response from backend:', res);
         this.logs = res.logs || [];
         this.logsLoading = false;
@@ -199,17 +211,8 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   // --- Edit modal helpers ---
-  editId: string | null = null;
-  showEdit = false;
-  editModel = {
-    recipient: '',
-    platform: 'email' as 'email' | 'sms' | 'whatsapp',
-    subject: '',
-    content: '',
-    scheduledTimeLocal: ''
-  };
-
   openEdit(msg: Message) {
+    console.log('[openEdit] clicked for', msg._id, 'status:', msg.status);
     if (msg.status !== 'pending') {
       alert('Only pending messages can be edited.');
       return;
@@ -223,6 +226,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
       scheduledTimeLocal: this.isoToLocalInput(msg.scheduledTime)
     };
     this.showEdit = true;
+    console.log('[openEdit] showEdit =', this.showEdit, 'editModel =', this.editModel);
   }
 
   closeEdit() {
