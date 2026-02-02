@@ -178,13 +178,16 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     this.showLogs = true;
     this.logsLoading = true;
 
-    this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/${msg._id}/logs`).subscribe({
+    // this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/${msg._id}/logs`).subscribe({
+    this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/logs/${msg._id}`).subscribe({
       next: (res) => {
-        this.logs = res.logs || [];
+        console.log('Logs response', res);
+        // this.logs = res.logs || [];
+        this.logs = (res as any).logs || (res as any).data || [];
         this.logsLoading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Error loading logs', err);
         this.logsLoading = false;
         alert('❌ Failed to load logs');
       }
@@ -245,15 +248,19 @@ export class MessagesListComponent implements OnInit, OnDestroy {
       payload.subject = this.editModel.subject || '';
     }
 
+    console.log('[saveEdit] editId =', this.editId);
+    console.log('[saveEdit] payload =', payload);
+
     this.http.put(`${this.API_URL}/update/${this.editId}`, payload).subscribe({
-      next: () => {
+      next: (res) => {
+        console.log('[saveEdit] success response =', res);
         this.saving = false;
         this.closeEdit();
         this.loadMessages();
         alert('✅ Message updated');
       },
       error: (err) => {
-        console.error(err);
+        console.error('[saveEdit] error =', err);
         this.saving = false;
         alert(err?.error?.msg || '❌ Failed to update message');
       }
