@@ -8,6 +8,8 @@ import { requireAuth } from "../middleware/auth.js"; // Import your auth middlew
 
 const router = express.Router();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4200'
+
 // 🔑 Helper to generate JWT
 function generateToken(user) {
   return jwt.sign(
@@ -89,24 +91,24 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:4200/login?error=auth_failed",
+    failureRedirect: `${FRONTEND_URL}/login?error=auth_failed`,
     session: false,
   }),
   (req, res) => {
     if (!req.user) {
       // This case should ideally be caught by passport.authenticate failureRedirect
-      return res.redirect("http://localhost:4200/login?error=auth_failed");
+      return res.redirect(`${FRONTEND_URL}/login?error=auth_failed`);
     }
 
     // Handle the case where Google account is already linked to another user
     if (req.authInfo && req.authInfo.message === "This Google account is already linked to another user.") {
-      return res.redirect("http://localhost:4200/dashboard?error=google_already_linked");
+      return res.redirect(`${FRONTEND_URL}/dashboard?error=google_already_linked`);
     }
 
     const token = generateToken(req.user);
 
     // Redirect with JWT token
-    res.redirect(`http://localhost:4200/dashboard?token=${token}`);
+    res.redirect(`${FRONTEND_URL}/dashboard?token=${token}`);
   }
 );
 
@@ -128,21 +130,21 @@ router.get(
   "/google/link/callback",
   requireAuth, // Ensure user is still authenticated
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:4200/dashboard?error=link_failed", // Redirect to dashboard on failure
+    failureRedirect: `${FRONTEND_URL}/dashboard?error=link_failed`, // Redirect to dashboard on failure
     session: false,
   }),
   (req, res) => {
     if (!req.user) {
-      return res.redirect("http://localhost:4200/dashboard?error=link_failed");
+      return res.redirect(`${FRONTEND_URL}/dashboard?error=link_failed`);
     }
 
     // Handle the case where Google account is already linked to another user
     if (req.authInfo && req.authInfo.message === "This Google account is already linked to another user.") {
-      return res.redirect("http://localhost:4200/dashboard?error=google_already_linked");
+      return res.redirect(`${FRONTEND_URL}/dashboard?error=google_already_linked`);
     }
 
     // If linking is successful, redirect back to dashboard with a success message
-    res.redirect("http://localhost:4200/dashboard?link_success=true");
+    res.redirect(`${FRONTEND_URL}/dashboard?link_success=true`);
   }
 );
 

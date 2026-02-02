@@ -22,8 +22,8 @@ app.use(express.json());
 app.use(cors({
   origin: [
     "http://localhost:4200",              // local Angular dev
-    "https://your-firebase-app.web.app",  // ✅ replace with your real Firebase Hosting URL
-    "https://your-firebase-app.firebaseapp.com"
+    "https://echodrop-c4a0d.web.app",  // ✅ replace with your real Firebase Hosting URL
+    "https://echodrop-c4a0d.firebaseapp.com"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: false   // you use JWT in Authorization header, so cookies not needed
