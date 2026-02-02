@@ -178,12 +178,10 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     this.showLogs = true;
     this.logsLoading = true;
 
-    // this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/${msg._id}/logs`).subscribe({
-    this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/logs/${msg._id}`).subscribe({
-      next: (res) => {
+    this.http.get<{ logs: LogEntry[] }>(`${this.API_URL}/${msg._id}/logs`).subscribe({
+         next: (res) => {
         console.log('Logs response', res);
-        // this.logs = res.logs || [];
-        this.logs = (res as any).logs || (res as any).data || [];
+        this.logs = res.logs || [];
         this.logsLoading = false;
       },
       error: (err) => {
