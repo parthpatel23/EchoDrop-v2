@@ -1,4 +1,4 @@
-// AngularApp\echodrop\frontend-angular\src\app\messages\messages-list\messages-list.component.ts
+// AngularApp\EchoDrop-v2\frontend-angular\src\app\messages\messages-list\messages-list.component.ts
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -35,7 +35,13 @@ type LogEntry = {
 export class MessagesListComponent implements OnInit, OnDestroy {
   // API_URL = 'http://localhost:5000/messages';
   API_URL = 'https://echodrop-backend.onrender.com/messages';
+
+  // All messages from the API
+  private allMessages: Message[] = [];
+
+  // Messages actually shown in the table (after filtering)
   messages: Message[] = [];
+
   loading = false;
   saving = false;
 
@@ -53,7 +59,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   private routerSubscription: any;
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -63,7 +69,7 @@ export class MessagesListComponent implements OnInit, OnDestroy {
 
     // 🔄 Automatically refresh messages every 5 seconds
     this.refreshInterval = setInterval(() => {
-      this.loadMessages(false); // refresh silently
+      this.loadMessages(false); // refresh silently, keep current filter
     }, 5000);
 
     // Listen for route changes to refresh when navigating to this page
@@ -78,7 +84,6 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Clear interval when component is destroyed to avoid memory leaks
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
@@ -87,13 +92,17 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Always fetch ALL messages from the backend,
+   * then apply the current status filter on the client.
+   */
   loadMessages(showLoading = true) {
     if (showLoading) this.loading = true;
 
-    const query = this.selectedStatus !== 'all' ? `?status=${this.selectedStatus}` : '';
-    this.http.get<{ messages: Message[] }>(`${this.API_URL}/list${query}`).subscribe({
+    this.http.get<{ messages: Message[] }>(`${this.API_URL}/list`).subscribe({
       next: (res) => {
-        this.messages = res.messages || [];
+        this.allMessages = res.messages || [];
+        this.applyFilter(); // refresh this.messages according to selectedStatus
         this.loading = false;
         this.cdr.detectChanges(); // Force UI update
       },
@@ -105,9 +114,23 @@ export class MessagesListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Update the visible messages based on selectedStatus.
+   * "all" => no filtering.
+   */
+  private applyFilter() {
+    if (this.selectedStatus === 'all') {
+      this.messages = [...this.allMessages];
+    } else {
+      this.messages = this.allMessages.filter(
+        msg => msg.status === this.selectedStatus
+      );
+    }
+  }
+
   filterByStatus(status: string) {
     this.selectedStatus = status;
-    this.loadMessages();
+    this.applyFilter(); // no extra HTTP call; we already have allMessages
   }
 
   // Cancel
