@@ -89,14 +89,56 @@
         <h3>Edit Message</h3>
         <button class="modal-close" (click)="closeEdit()">&times;</button>
       </div>
-      <div class="modal-body">
-        <!-- Edit form would go here -->
-        <p>Edit form implementation would be here...</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeEdit()">Cancel</button>
-        <button class="btn btn-primary" (click)="saveEdit()">Save Changes</button>
-      </div>
+
+      <!-- Use a form so we can validate and submit cleanly -->
+      <form (ngSubmit)="saveEdit()" #editForm="ngForm">
+        <div class="modal-body">
+          <!-- Recipient -->
+          <div class="form-group">
+            <label for="edit-recipient">Recipient</label>
+            <input id="edit-recipient" type="text" class="form-control" name="recipient"
+              [(ngModel)]="editModel.recipient" required />
+          </div>
+
+          <!-- Platform (read-only display) -->
+          <div class="form-group">
+            <label>Platform</label>
+            <div class="platform-pill platform-{{ editModel.platform }}">
+              {{ editModel.platform | titlecase }}
+            </div>
+          </div>
+
+          <!-- Subject (only for email) -->
+          <div class="form-group" *ngIf="editModel.platform === 'email'">
+            <label for="edit-subject">Subject</label>
+            <input id="edit-subject" type="text" class="form-control" name="subject" [(ngModel)]="editModel.subject" />
+          </div>
+
+          <!-- Content -->
+          <div class="form-group">
+            <label for="edit-content">Content</label>
+            <textarea id="edit-content" class="form-control" name="content" rows="4" [(ngModel)]="editModel.content"
+              required></textarea>
+          </div>
+
+          <!-- Scheduled time (local) -->
+          <div class="form-group">
+            <label for="edit-scheduled-time">Scheduled Time</label>
+            <input id="edit-scheduled-time" type="datetime-local" class="form-control" name="scheduledTimeLocal"
+              [(ngModel)]="editModel.scheduledTimeLocal" required />
+            <small class="hint">Times are shown in your local timezone.</small>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEdit()">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving || editForm.invalid">
+            {{ saving ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -107,9 +149,43 @@
         <h3>Message Delivery Logs</h3>
         <button class="modal-close" (click)="closeLogs()">&times;</button>
       </div>
+
       <div class="modal-body">
-        <!-- Logs content would go here -->
-        <p>Logs implementation would be here...</p>
+        <!-- Loading state -->
+        <div *ngIf="logsLoading" class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Loading logs...</p>
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="!logsLoading && logs.length === 0" class="empty-state">
+          <p>No logs found for this message yet.</p>
+        </div>
+
+        <!-- Logs table -->
+        <table *ngIf="!logsLoading && logs.length > 0" class="logs-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of logs">
+              <td>{{ log.timestamp | date:'medium' }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="{
+                  'status-sent': log.status === 'sent',
+                  'status-failed': log.status === 'failed'
+                }">
+                  {{ log.status | titlecase }}
+                </span>
+              </td>
+              <td>{{ log.error || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
