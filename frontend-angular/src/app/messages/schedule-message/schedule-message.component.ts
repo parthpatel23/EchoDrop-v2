@@ -13,7 +13,8 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./schedule-message.component.scss']
 })
 export class ScheduleMessageComponent {
-  API_URL = 'http://localhost:5000/messages';
+  // API_URL = 'http://localhost:5000/messages';
+  API_URL = 'https://echodrop-backend.onrender.com/messages';
 
   // Two modes:
   //  - 'message'  -> Email / SMS / WhatsApp (to others)

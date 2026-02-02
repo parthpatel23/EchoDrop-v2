@@ -9,7 +9,8 @@ import User from "../models/User.js";
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_REDIRECT_URI || "http://localhost:5000/auth/google/callback",
+  // {callbackURL: process.env.GOOGLE_REDIRECT_URI || "http://localhost:5000/auth/google/callback",}
+  callbackURL: process.env.GOOGLE_REDIRECT_URI,
   passReqToCallback: true // IMPORTANT: Allows us to access req in the callback
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {

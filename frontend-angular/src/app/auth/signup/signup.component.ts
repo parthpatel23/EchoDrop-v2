@@ -20,6 +20,8 @@ export class SignupComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  private API_URL = 'https://echodrop-backend.onrender.com'; // your Render backend URL
+
   // Manual signup
 onSignup() {
   const body = {
@@ -29,7 +31,7 @@ onSignup() {
     password: this.password
   };
 
-  this.http.post('http://localhost:5000/auth/signup', body).subscribe({
+  this.http.post(`${this.API_URL}/auth/signup`, body).subscribe({
     next: (res: any) => {
       alert(res.msg || "Signup successful! Please login.");
       this.router.navigate(['/login']); // ✅ redirect to login page
@@ -43,6 +45,6 @@ onSignup() {
 
   // Google signup
   signupWithGoogle() {
-    window.location.href = 'http://localhost:5000/auth/google';
+    window.location.href = `${this.API_URL}/auth/google`;
   }
 }

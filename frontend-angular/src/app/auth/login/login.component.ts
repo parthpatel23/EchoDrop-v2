@@ -1,10 +1,9 @@
 // AngularApp\echodrop\frontend-angular\src\app\auth\login\login.component.ts
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service'; // ← Add this import
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,24 +13,24 @@ import { AuthService } from '../../services/auth.service'; // ← Add this impor
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  email: string = '';
-  password: string = '';
+  email = '';
+  password = '';
 
-  // Add AuthService to constructor ← Important!
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  // Manual login
+  // Manual login via AuthService (uses BACKEND_URL from AuthService)
   onLogin() {
     const body = { email: this.email, password: this.password };
-    this.http.post('http://localhost:5000/auth/login', body).subscribe({
-      next: (res: any) => {
-        // ✅ Use AuthService to set token instead of direct localStorage
-        this.authService.setToken(res.token); // ← This will update the BehaviorSubject
 
-        // Debug log to confirm
+    this.authService.login(body).subscribe({
+      next: (res: any) => {
+        // Save token via AuthService (also updates navbar, guards, etc.)
+        this.authService.setToken(res.token);
         console.log('Token saved via AuthService:', res.token);
 
-        // ✅ Now navigate
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
@@ -41,8 +40,8 @@ export class LoginComponent {
     });
   }
 
-  // Google login
+  // Google login via AuthService
   loginWithGoogle() {
-    window.location.href = 'http://localhost:5000/auth/google';
+    this.authService.loginWithGoogle();
   }
 }

@@ -33,7 +33,8 @@ type LogEntry = {
   styleUrls: ['./messages-list.component.scss']
 })
 export class MessagesListComponent implements OnInit, OnDestroy {
-  API_URL = 'http://localhost:5000/messages';
+  // API_URL = 'http://localhost:5000/messages';
+  API_URL = 'https://echodrop-backend.onrender.com/messages';
   messages: Message[] = [];
   loading = false;
   saving = false;

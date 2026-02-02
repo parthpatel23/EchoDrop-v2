@@ -8,7 +8,8 @@ import { isPlatformBrowser } from '@angular/common'; // ✅ Correct import
   providedIn: 'root'
 })
 export class AuthService {
-  private API_URL = 'http://localhost:5000';
+  // private API_URL = 'http://localhost:5000';
+  private API_URL = 'https://echodrop-backend.onrender.com'; // your Render URL
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedIn.asObservable();
 

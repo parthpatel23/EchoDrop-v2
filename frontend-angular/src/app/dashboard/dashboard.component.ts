@@ -14,7 +14,8 @@ import { AuthService } from '../services/auth.service';
 export class DashboardComponent implements OnInit {
   userData: any = {};
   loading = true;
-  API_URL = 'http://localhost:5000';
+  // API_URL = 'http://localhost:5000';
+  private API_URL = 'https://echodrop-backend.onrender.com'; // your Render URL
 
   constructor(
     private auth: AuthService,
