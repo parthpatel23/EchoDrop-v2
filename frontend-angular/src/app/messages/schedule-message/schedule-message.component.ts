@@ -1,4 +1,4 @@
-// AngularApp\echodrop\frontend-angular\src\app\messages\schedule-message\schedule-message.component.ts
+// AngularApp\EchoDrop-v2\frontend-angular\src\app\messages\schedule-message\schedule-message.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,8 +12,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './schedule-message.component.html',
   styleUrls: ['./schedule-message.component.scss']
 })
-export class ScheduleMessageComponent {
-  // API_URL = 'http://localhost:5000/messages';
+export class ScheduleMessageComponent implements OnInit {
   API_URL = 'https://echodrop-backend.onrender.com/messages';
 
   // Two modes:
@@ -75,7 +74,7 @@ export class ScheduleMessageComponent {
     }
   ];
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.applyDefaultChannel();
@@ -109,8 +108,6 @@ export class ScheduleMessageComponent {
       // Telegram reminder: no recipient, platform fixed to telegram
       this.message.platform = 'telegram';
       this.message.recipient = '';
-      // keep or clear subject as you like
-      // this.message.subject = '';
     } else {
       // Back to scheduled message: default to email if currently telegram
       if (this.message.platform === 'telegram') {
@@ -127,7 +124,6 @@ export class ScheduleMessageComponent {
     const template = list.find(t => t.id === templateId);
     if (!template) return;
 
-    // Overwrite subject/content with template values
     if (template.subject !== undefined) {
       this.message.subject = template.subject;
     }
@@ -162,18 +158,32 @@ export class ScheduleMessageComponent {
       }
     }
 
-    this.http.post(`${this.API_URL}/create`, this.message).subscribe({
-      next: (res: any) => {
-        alert('✅ Message scheduled successfully!');
-        setTimeout(() => {
-          this.router.navigate(['/messages']);
-        }, 500);
-      },
-      error: (err) => {
-        console.error(err);
-        alert(err.error?.msg || '❌ Failed to schedule message');
-      }
-    });
+    // Convert local datetime (from <input type="datetime-local">) to UTC ISO string
+    try {
+      const localDate = new Date(this.message.scheduledTime);  // interpreted in browser local timezone
+      const utcISO = localDate.toISOString();                  // converts to UTC ISO
+
+      const payload = {
+        ...this.message,
+        scheduledTime: utcISO
+      };
+
+      this.http.post(`${this.API_URL}/create`, payload).subscribe({
+        next: (res: any) => {
+          alert('✅ Message scheduled successfully!');
+          setTimeout(() => {
+            this.router.navigate(['/messages']);
+          }, 500);
+        },
+        error: (err) => {
+          console.error(err);
+          alert(err.error?.msg || '❌ Failed to schedule message');
+        }
+      });
+    } catch (e) {
+      console.error('Error converting scheduledTime to UTC', e);
+      alert('Invalid schedule time.');
+    }
   }
 
   goTo(path: string) {

@@ -45,6 +45,7 @@ router.post("/create", requireAuth, async (req, res) => {
       subject,
       content,
       scheduledTime: date,
+      status: "pending",
       meta,
     });
 
