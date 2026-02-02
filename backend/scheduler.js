@@ -9,6 +9,7 @@ console.log("⏳ Scheduler initialized...");
 
 cron.schedule("* * * * *", async () => {  // Runs every minute
   const now = new Date();
+  console.log("⏰ Scheduler tick at", now.toISOString());
 
   try {
     const dueMessages = await ScheduledMessage.find({
@@ -16,8 +17,12 @@ cron.schedule("* * * * *", async () => {  // Runs every minute
       scheduledTime: { $lte: now },
     });
 
+    console.log("📬 Due messages count:", dueMessages.length);
+
     for (let msg of dueMessages) {
       try {
+        console.log("➡️ Processing message", msg._id.toString(), "platform:", msg.platform);
+        
         msg.status = "processing";
         msg.attempts = (msg.attempts || 0) + 1;
         await msg.save();
