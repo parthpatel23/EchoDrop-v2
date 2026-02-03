@@ -32,6 +32,7 @@ export class AdminDashboardComponent implements OnInit {
     // Load stats
     this.http.get<any>(`${this.API_URL}/stats`).subscribe({
       next: (res) => {
+        console.log('[Admin] stats response', res);
         this.stats = res;
         this.loading = false;
       },

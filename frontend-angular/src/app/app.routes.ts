@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'admin', component: AdminDashboardComponent, canActivate: [AuthGuard], data: { adminOnly: true } },
+  { path: 'admin', component: AdminDashboardComponent, data: { adminOnly: true }, canActivate: [AuthGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountSettingsComponent, canActivate: [AuthGuard] },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
