@@ -10,12 +10,8 @@
   <div class="filters-section">
     <h3>Filter by status:</h3>
     <div class="filter-buttons">
-      <button
-        *ngFor="let status of statuses"
-        class="filter-btn"
-        [class.active]="selectedStatus === status"
-        (click)="filterByStatus(status)"
-      >
+      <button *ngFor="let status of statuses" class="filter-btn" [class.active]="selectedStatus === status"
+        (click)="filterByStatus(status)">
         {{ status | titlecase }}
       </button>
     </div>
@@ -58,12 +54,8 @@
             </span>
           </td>
           <td class="actions">
-            <button
-              class="btn-action"
-              (click)="openEdit(msg)"
-              [disabled]="msg.status !== 'pending'"
-              title="Edit message"
-            >
+            <button class="btn-action" (click)="openEdit(msg)" [disabled]="msg.status !== 'pending'"
+              title="Edit message">
               <i class="fas fa-edit"></i>
               <span>Edit</span>
             </button>
@@ -71,12 +63,8 @@
               <i class="fas fa-history"></i>
               <span>Logs</span>
             </button>
-            <button
-              class="btn-action btn-danger"
-              (click)="cancelMessage(msg._id)"
-              [disabled]="msg.status !== 'pending'"
-              title="Cancel message"
-            >
+            <button class="btn-action btn-danger" (click)="cancelMessage(msg._id)" [disabled]="msg.status !== 'pending'"
+              title="Cancel message">
               <i class="fas fa-times"></i>
               <span>Cancel</span>
             </button>
@@ -102,6 +90,7 @@
   <div *ngIf="showEdit" class="ed-modal-overlay">
     <div class="ed-modal ed-modal--wide">
       <div class="ed-modal__header">
+        <!-- title + close button -->
         <div class="ed-modal__title">
           <span class="ed-modal__icon ed-modal__icon--edit">
             <i class="fas fa-edit"></i>
@@ -126,15 +115,9 @@
               <!-- Recipient -->
               <div class="form-group">
                 <label for="edit-recipient">Recipient</label>
-                <input
-                  id="edit-recipient"
-                  type="text"
-                  class="form-control"
-                  name="recipient"
-                  [(ngModel)]="editModel.recipient"
-                  [required]="editModel.platform !== 'telegram'"
-                  placeholder="name@example.com / phone / username"
-                />
+                <input id="edit-recipient" type="text" class="form-control" name="recipient"
+                  [(ngModel)]="editModel.recipient" [required]="editModel.platform !== 'telegram'"
+                  placeholder="name@example.com / phone / username" />
                 <small class="hint" *ngIf="editModel.platform === 'telegram'">
                   Optional for Telegram messages.
                 </small>
@@ -144,15 +127,12 @@
               <div class="form-group">
                 <label>Platform</label>
                 <div class="platform-pill platform-{{ editModel.platform }}">
-                  <i
-                    class="fas"
-                    [ngClass]="{
+                  <i class="fas" [ngClass]="{
                       'fa-envelope': editModel.platform === 'email',
                       'fa-sms': editModel.platform === 'sms',
                       'fa-whatsapp': editModel.platform === 'whatsapp',
                       'fa-telegram': editModel.platform === 'telegram'
-                    }"
-                  ></i>
+                    }"></i>
                   <span>{{ editModel.platform | titlecase }}</span>
                 </div>
               </div>
@@ -161,28 +141,15 @@
             <!-- Subject (only for email) -->
             <div class="form-group" *ngIf="editModel.platform === 'email'">
               <label for="edit-subject">Subject</label>
-              <input
-                id="edit-subject"
-                type="text"
-                class="form-control"
-                name="subject"
-                [(ngModel)]="editModel.subject"
-                placeholder="Subject line"
-              />
+              <input id="edit-subject" type="text" class="form-control" name="subject" [(ngModel)]="editModel.subject"
+                placeholder="Subject line" />
             </div>
 
             <!-- Content -->
             <div class="form-group">
               <label for="edit-content">Message Content</label>
-              <textarea
-                id="edit-content"
-                class="form-control"
-                name="content"
-                rows="5"
-                [(ngModel)]="editModel.content"
-                required
-                placeholder="Type the message your recipient will receive..."
-              ></textarea>
+              <textarea id="edit-content" class="form-control" name="content" rows="5" [(ngModel)]="editModel.content"
+                required placeholder="Type the message your recipient will receive..."></textarea>
               <div class="hint-row">
                 <small class="hint">Use clear, concise language.</small>
                 <small class="hint">{{ editModel.content.length || 0 }} chars</small>
@@ -194,14 +161,8 @@
             <h4 class="ed-modal__section-title">Schedule</h4>
             <div class="form-group">
               <label for="edit-scheduled-time">Scheduled Time</label>
-              <input
-                id="edit-scheduled-time"
-                type="datetime-local"
-                class="form-control"
-                name="scheduledTimeLocal"
-                [(ngModel)]="editModel.scheduledTimeLocal"
-                required
-              />
+              <input id="edit-scheduled-time" type="datetime-local" class="form-control" name="scheduledTimeLocal"
+                [(ngModel)]="editModel.scheduledTimeLocal" required />
               <small class="hint">
                 Times are shown in your local timezone. Must be in the future.
               </small>
@@ -209,7 +170,7 @@
           </div>
         </div>
 
-        <div class="ed-modal__footer">
+        <div class="ed-modal__footer ed-modal__footer--right">
           <button type="button" class="btn btn-secondary" (click)="closeEdit()">
             Cancel
           </button>
@@ -274,20 +235,14 @@
               <tr *ngFor="let log of logs">
                 <td>{{ log.timestamp | date: 'medium' }}</td>
                 <td>
-                  <span
-                    class="log-status-chip"
-                    [ngClass]="{
+                  <span class="log-status-chip" [ngClass]="{
                       'log-status-chip--sent': log.status === 'sent',
                       'log-status-chip--failed': log.status === 'failed'
-                    }"
-                  >
-                    <i
-                      class="fas"
-                      [ngClass]="{
+                    }">
+                    <i class="fas" [ngClass]="{
                         'fa-check-circle': log.status === 'sent',
                         'fa-exclamation-circle': log.status === 'failed'
-                      }"
-                    ></i>
+                      }"></i>
                     {{ log.status | titlecase }}
                   </span>
                 </td>

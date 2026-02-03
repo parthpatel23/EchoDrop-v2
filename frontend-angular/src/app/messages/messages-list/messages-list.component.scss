@@ -502,11 +502,22 @@
   }
 }
 
+/* Make the form inside the modal a flex column */
+.ed-modal form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0; /* important for flex scrolling in some browsers */
+}
+
+/* Body should use the available space and scroll if needed */
 .ed-modal__body {
   padding: 1.3rem 1.5rem 1.1rem;
+  flex: 1 1 auto;
   overflow-y: auto;
 }
 
+/* Footer should always be visible at the bottom */
 .ed-modal__footer {
   padding: 0.85rem 1.5rem 1.1rem;
   border-top: 1px solid rgba(226, 232, 240, 0.9);
@@ -514,6 +525,7 @@
   gap: 0.6rem;
   justify-content: flex-end;
   background: #f9fafb;
+  flex-shrink: 0;
 }
 
 .ed-modal__footer--right {

@@ -1,4 +1,4 @@
-// AngularApp/echodrop/backend/src/services/sendMessage.js
+// AngularApp/EchoDrop-v2/backend/src/services/sendMessage.js
 import { google } from 'googleapis';
 import twilio from 'twilio';
 import axios from 'axios';
