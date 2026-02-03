@@ -14,6 +14,7 @@ import "../scheduler.js";
 // Routes
 import authRoutes from "./routes/auth.js";
 import messagesRoutes from "./routes/messages.js";
+import adminRoutes from "./routes/admin.js";  // 🔹 NEW
 
 const app = express();
 
@@ -21,12 +22,12 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: [
-    "http://localhost:4200",              // local Angular dev
-    "https://echodrop-c4a0d.web.app",  // ✅ replace with your real Firebase Hosting URL
+    "http://localhost:4200",                 // local Angular dev
+    "https://echodrop-c4a0d.web.app",       // Firebase Hosting URL
     "https://echodrop-c4a0d.firebaseapp.com"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: false   // you use JWT in Authorization header, so cookies not needed
+  credentials: false   // using JWT in Authorization, cookies not needed
 }));
 app.use(passport.initialize());
 
@@ -38,6 +39,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use("/auth", authRoutes);
 app.use("/messages", messagesRoutes);
+app.use("/admin", adminRoutes);             // 🔹 NEW
 
 // Health route
 app.get("/", (req, res) => res.json({ ok: true, timestamp: Date.now() }));
