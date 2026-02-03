@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
 
   // admin flag
   isAdmin: { type: Boolean, default: false },
-});
+},
+  { timestamps: true }  // this adds createdAt / updatedAt for new docs
+);
 
 export default mongoose.model("User", userSchema);

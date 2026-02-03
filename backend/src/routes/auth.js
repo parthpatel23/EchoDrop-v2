@@ -13,7 +13,11 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4200'
 // 🔑 Helper to generate JWT
 function generateToken(user) {
   return jwt.sign(
-    { id: user._id, email: user.email },
+    {
+      id: user._id,
+      email: user.email,
+      isAdmin: user.isAdmin
+    },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );

@@ -66,6 +66,13 @@ router.get("/users", async (req, res) => {
         },
       },
       {
+        $addFields: {
+          joinedAt: {
+            $ifNull: ["$createdAt", { $toDate: "$_id" }]
+          }
+        }
+      },
+      {
         $project: {
           email: 1,
           name: 1,

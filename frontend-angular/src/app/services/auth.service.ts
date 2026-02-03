@@ -1,8 +1,8 @@
-// AngularApp\echodrop\frontend-angular\src\app\services\auth.service.ts
+// AngularApp\EchoDrop-v2\frontend-angular\src\app\services\auth.service.ts
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common'; // ✅ Correct import
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +15,11 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: any // ✅ Inject platformId
+    @Inject(PLATFORM_ID) private platformId: any
   ) { }
 
   private isBrowser(): boolean {
-    return isPlatformBrowser(this.platformId); // ✅ Use Angular's function
+    return isPlatformBrowser(this.platformId);
   }
 
   private hasToken(): boolean {
@@ -44,7 +44,23 @@ export class AuthService {
     }
   }
 
-  // ... rest of your methods remain the same
+  /** 🔹 NEW: convenient admin flag decoded from JWT */
+  get isAdmin(): boolean {
+    if (!this.isBrowser()) return false;
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const payloadPart = token.split('.')[1];
+      const payloadJson = atob(payloadPart);   // safe because we checked isBrowser()
+      const payload = JSON.parse(payloadJson);
+      return !!payload.isAdmin;
+    } catch (e) {
+      console.error('Failed to decode JWT', e);
+      return false;
+    }
+  }
+
   signup(user: any): Observable<any> {
     return this.http.post(`${this.API_URL}/auth/signup`, user);
   }
