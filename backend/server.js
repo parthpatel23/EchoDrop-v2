@@ -41,5 +41,9 @@ app.use("/auth", authRoutes);
 app.use("/messages", messageRoutes);
 app.use("/admin", adminRoutes);
 
+app.get("/version", (req, res) => {
+  res.json({ version: "admin-routes-added" });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
