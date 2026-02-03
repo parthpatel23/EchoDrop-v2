@@ -1,0 +1,208 @@
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+
+  h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.6rem;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+}
+
+.admin-error {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  margin-bottom: 16px;
+
+  i {
+    font-size: 1.2rem;
+    margin-top: 2px;
+  }
+
+  h3 {
+    margin: 0 0 2px 0;
+    font-size: 0.95rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.admin-loading {
+  text-align: center;
+  padding: 40px 0;
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid #e5e7eb;
+    border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+
+  h3 {
+    margin: 0 0 4px 0;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+
+  .metric {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .card-subtitle {
+    margin: 2px 0 0 0;
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  &.card--status.pending .metric {
+    color: #92400e;
+  }
+
+  &.card--status.sent .metric {
+    color: #166534;
+  }
+
+  &.card--status.failed .metric {
+    color: #b91c1c;
+  }
+
+  &.card--status.cancelled .metric {
+    color: #4b5563;
+  }
+}
+
+.admin-section {
+  margin-top: 20px;
+}
+
+.admin-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+
+  h2 {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.admin-section__badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.table-wrapper {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th,
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+  }
+
+  thead th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #f9fafb;
+  }
+
+  .truncate {
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.empty-hint {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Status chips in logs table */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-chip--failed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

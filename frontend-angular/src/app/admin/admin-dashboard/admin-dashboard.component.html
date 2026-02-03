@@ -1,0 +1,136 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>Monitor users, messages, and delivery health for EchoDrop.</p>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="admin-error">
+    <i class="fas fa-exclamation-triangle"></i>
+    <div>
+      <h3>Access issue</h3>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading && !error" class="admin-loading">
+    <div class="spinner"></div>
+    <p>Loading admin data…</p>
+  </div>
+
+  <!-- Stats cards -->
+  <div *ngIf="!loading && !error && stats" class="admin-grid">
+    <div class="card">
+      <h3>Total Users</h3>
+      <p class="metric">{{ stats.totalUsers }}</p>
+      <p class="card-subtitle">All registered accounts</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Messages</h3>
+      <p class="metric">{{ stats.totalMessages }}</p>
+      <p class="card-subtitle">All scheduled messages</p>
+    </div>
+
+    <div class="card card--status pending">
+      <h3>Pending</h3>
+      <p class="metric">{{ stats.byStatus?.pending }}</p>
+    </div>
+
+    <div class="card card--status sent">
+      <h3>Sent</h3>
+      <p class="metric">{{ stats.byStatus?.sent }}</p>
+    </div>
+
+    <div class="card card--status failed">
+      <h3>Failed</h3>
+      <p class="metric">{{ stats.byStatus?.failed }}</p>
+    </div>
+
+    <div class="card card--status cancelled">
+      <h3>Cancelled</h3>
+      <p class="metric">{{ stats.byStatus?.cancelled }}</p>
+    </div>
+  </div>
+
+  <!-- Failed messages table -->
+  <div *ngIf="!error" class="admin-section">
+    <div class="admin-section__header">
+      <h2>Recent Failed Messages</h2>
+      <span class="admin-section__badge">
+        {{ failedMessages.length }} shown
+      </span>
+    </div>
+
+    <div *ngIf="failedMessages.length > 0" class="table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Recipient</th>
+            <th>Platform</th>
+            <th>Content</th>
+            <th>Scheduled</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let msg of failedMessages">
+            <td>{{ msg.createdBy?.email || '—' }}</td>
+            <td>{{ msg.recipient || '—' }}</td>
+            <td>{{ msg.platform | titlecase }}</td>
+            <td class="truncate" [title]="msg.content">{{ msg.content }}</td>
+            <td>{{ msg.scheduledTime | date: 'short' }}</td>
+            <td>
+              <span class="status-chip status-chip--failed">Failed</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p *ngIf="!loading && failedMessages.length === 0 && !error" class="empty-hint">
+      No failed messages. Everything looks healthy.
+    </p>
+  </div>
+
+  <!-- Users table -->
+  <div *ngIf="!error" class="admin-section">
+    <div class="admin-section__header">
+      <h2>Users</h2>
+      <span class="admin-section__badge">
+        {{ users.length }} total
+      </span>
+    </div>
+
+    <div *ngIf="users.length > 0" class="table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Admin</th>
+            <th>Messages</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of users">
+            <td>{{ u.email }}</td>
+            <td>{{ u.name || '—' }}</td>
+            <td>{{ u.isAdmin ? 'Yes' : 'No' }}</td>
+            <td>{{ u.messagesCount }}</td>
+            <td>{{ u.createdAt | date: 'shortDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p *ngIf="!loading && users.length === 0 && !error" class="empty-hint">
+      No users found.
+    </p>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-// AngularApp\echodrop\backend\src\middleware\auth.js
+// AngularApp\EchoDrop-v2\backend\src\middleware\auth.js
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
@@ -20,4 +20,12 @@ export async function requireAuth(req, res, next) {
     console.error("Auth middleware error:", err.message);
     return res.status(401).json({ msg: "Invalid or expired token" });
   }
+}
+
+// admin guard
+export function requireAdmin(req, res, next) {
+  if (!req.user || !req.user.isAdmin) {
+    return res.status(403).json({ msg: "Admin only" });
+  }
+  next();
 }

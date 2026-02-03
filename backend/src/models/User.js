@@ -1,4 +1,4 @@
-// AngularApp\echodrop\backend\src\models\User.js
+// AngularApp\EchoDrop-v2\backend\src\models\User.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
   profilePicture: String,
   googleAccessToken: String, // New field for Google API access token
   googleRefreshToken: String, // New field for Google API refresh token
+
+  // admin flag
+  isAdmin: { type: Boolean, default: false },
 });
 
 export default mongoose.model("User", userSchema);
