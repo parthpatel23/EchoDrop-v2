@@ -1,8 +1,12 @@
 <div class="admin-container">
   <div class="admin-header">
     <div>
-      <h1>Admin Dashboard</h1>
+      <h1>Admin Console</h1>
       <p>Monitor users, messages, and delivery health for EchoDrop.</p>
+    </div>
+    <div class="admin-badge" *ngIf="auth.isOwner || auth.isAdmin">
+      <span *ngIf="auth.isOwner" class="badge badge--owner">Owner Admin</span>
+      <span *ngIf="!auth.isOwner && auth.isAdmin" class="badge badge--admin">Admin</span>
     </div>
   </div>
 
@@ -115,7 +119,7 @@
             <th>Admin</th>
             <th>Messages</th>
             <th>Joined</th>
-            <th>Actions</th>
+            <th *ngIf="isOwner">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -125,10 +129,10 @@
             <td>{{ u.isAdmin ? 'Yes' : 'No' }}</td>
             <td>{{ u.messagesCount }}</td>
             <td>{{ u.joinedAt | date: 'shortDate' }}</td>
-            <td>
-              <!-- Don't show the button on yourself -->
-              <button *ngIf="u.email !== currentAdminEmail" type="button" class="btn btn-secondary"
-                (click)="toggleAdmin(u)">
+            <td *ngIf="isOwner">
+              <!-- Don't show button for yourself or for the owner account -->
+              <button *ngIf="u.email !== currentAdminEmail && !u.isOwner" type="button" class="btn btn-secondary"
+                (click)="openRoleConfirm(u)">
                 {{ u.isAdmin ? 'Remove admin' : 'Make admin' }}
               </button>
             </td>
@@ -141,4 +145,32 @@
       No users found.
     </p>
   </div>
+
+  <!-- ===== ADMIN ROLE CONFIRM MODAL ===== -->
+  <div *ngIf="showRoleConfirm" class="admin-modal-overlay">
+    <div class="admin-modal">
+      <div class="admin-modal__header">
+        <h3>Change Admin Role</h3>
+        <button type="button" class="admin-modal__close" (click)="closeRoleConfirm()">
+          ×
+        </button>
+      </div>
+      <div class="admin-modal__body" *ngIf="roleTarget">
+        <p>
+          Are you sure you want to
+          <strong>{{ roleTargetNewState ? 'make' : 'remove' }}</strong>
+          admin access for <strong>{{ roleTarget.email }}</strong>?
+        </p>
+      </div>
+      <div class="admin-modal__footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRoleConfirm()">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="confirmRoleChange()">
+          Yes, change role
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

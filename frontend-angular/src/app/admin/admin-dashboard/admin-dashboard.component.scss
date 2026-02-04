@@ -22,6 +22,28 @@
   }
 }
 
+.admin-badge {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge--owner {
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: #fff;
+}
+
+.badge--admin {
+  background: linear-gradient(135deg, #4f46e5, #818cf8);
+  color: #fff;
+}
+
 .admin-error {
   display: flex;
   gap: 12px;
@@ -205,4 +227,53 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.admin-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+  overflow: hidden;
+}
+
+.admin-modal__header,
+.admin-modal__footer {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-modal__footer {
+  border-top: 1px solid #e5e7eb;
+  border-bottom: none;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.admin-modal__body {
+  padding: 0.9rem 1rem 1rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.admin-modal__close {
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
 }

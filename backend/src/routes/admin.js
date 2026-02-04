@@ -101,22 +101,41 @@ router.patch("/users/:id/admin", async (req, res) => {
       return res.status(400).json({ msg: "isAdmin (boolean) is required" });
     }
 
+    // 🔹 Only owner can change admin roles
+    if (!req.user.isOwner) {
+      return res.status(403).json({ msg: "Only the primary owner admin can manage admin roles." });
+    }
+
+    // Find target user
+    const target = await User.findById(req.params.id);
+    if (!target) return res.status(404).json({ msg: "User not found" });
+
+    // 🔹 Never allow changes to the owner account
+    if (target.isOwner) {
+      return res
+        .status(400)
+        .json({ msg: "The primary owner admin cannot be changed." });
+    }
+
     // Prevent removing your own admin access
-    if (req.user._id.toString() === req.params.id && isAdmin === false) {
+    if (req.user._id.toString() === target._id.toString() && isAdmin === false) {
       return res
         .status(400)
         .json({ msg: "You cannot remove your own admin access." });
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { isAdmin },
-      { new: true }
-    ).select("email name isAdmin");
+    target.isAdmin = isAdmin;
+    await target.save();
 
-    if (!user) return res.status(404).json({ msg: "User not found" });
-
-    res.json({ msg: "Admin status updated", user });
+    res.json({
+      msg: "Admin status updated",
+      user: {
+        _id: target._id,
+        email: target.email,
+        name: target.name,
+        isAdmin: target.isAdmin
+      }
+    });
   } catch (err) {
     console.error("Admin toggle error:", err);
     res.status(500).json({ msg: "Server error", error: err.message });

@@ -24,6 +24,11 @@ export class AdminDashboardComponent implements OnInit {
   users: any[] = [];
   failedMessages: any[] = [];
 
+  // --- Admin role change modal state ---
+  showRoleConfirm = false;
+  roleTarget: any = null;
+  roleTargetNewState: boolean = false; // true => make admin, false => remove admin
+
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
@@ -44,6 +49,10 @@ export class AdminDashboardComponent implements OnInit {
 
   get currentAdminEmail() {
     return this.auth.currentEmail;
+  }
+
+  get isOwner(): boolean {
+    return this.auth.isOwner;
   }
 
   loadAll() {
@@ -99,20 +108,34 @@ export class AdminDashboardComponent implements OnInit {
       });
   }
 
-  // Promote/demote admin
-  toggleAdmin(user: any) {
-    const makeAdmin = !user.isAdmin;
-    const actionText = makeAdmin ? 'Make admin' : 'Remove admin';
+  // Promote/demote owner/admin status
+  openRoleConfirm(user: any) {
+    // Only owner can see this button, but double-check
+    if (!this.isOwner) return;
 
-    // Prevent removing own admin access (frontend mirror of backend rule)
+    const makeAdmin = !user.isAdmin;
+
+    // Extra safety: don't allow changes to yourself
     if (!makeAdmin && user.email === this.currentAdminEmail) {
       this.toast.error("You can't remove your own admin access.");
       return;
     }
 
-    if (!confirm(`${actionText} for ${user.email}?`)) {
-      return;
-    }
+    this.roleTarget = user;
+    this.roleTargetNewState = makeAdmin;
+    this.showRoleConfirm = true;
+  }
+
+  closeRoleConfirm() {
+    this.showRoleConfirm = false;
+    this.roleTarget = null;
+  }
+
+  confirmRoleChange() {
+    if (!this.roleTarget) return;
+
+    const user = this.roleTarget;
+    const makeAdmin = this.roleTargetNewState;
 
     this.http
       .patch<any>(`${this.API_URL}/users/${user._id}/admin`, { isAdmin: makeAdmin })
@@ -124,10 +147,12 @@ export class AdminDashboardComponent implements OnInit {
             `User ${makeAdmin ? 'promoted to' : 'removed from'} admin`
           );
           this.cdr.detectChanges();
+          this.closeRoleConfirm();
         },
         error: (err) => {
           console.error('[Admin] toggle admin error', err);
           this.toast.error(err.error?.msg || 'Failed to update admin status');
+          this.closeRoleConfirm();
         }
       });
   }

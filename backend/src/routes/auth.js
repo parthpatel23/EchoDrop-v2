@@ -16,7 +16,8 @@ function generateToken(user) {
     {
       id: user._id,
       email: user.email,
-      isAdmin: user.isAdmin
+      isAdmin: user.isAdmin,
+      isOwner: user.isOwner
     },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }

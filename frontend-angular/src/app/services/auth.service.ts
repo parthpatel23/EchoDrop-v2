@@ -47,7 +47,22 @@ export class AuthService {
     }
   }
 
-  /** 🔹 NEW: convenient admin flag decoded from JWT */
+  /** convenient owner flag decoded from JWT */
+  get isOwner(): boolean {
+  const token = this.getToken();
+  if (!token || !this.isBrowser()) return false;
+
+  try {
+    const payloadPart = token.split('.')[1];
+    const payloadJson = atob(payloadPart);
+    const payload = JSON.parse(payloadJson);
+    return !!payload.isOwner;
+  } catch {
+    return false;
+  }
+}
+
+  /** convenient admin flag decoded from JWT */
   get isAdmin(): boolean {
     if (!this.isBrowser()) return false;
     const token = this.getToken();
