@@ -4,6 +4,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { ToastService } from '../../shared/toast.service';
+
+const SCHEDULE_DRAFT_KEY = 'echodrop_schedule_draft';
 
 @Component({
   selector: 'app-schedule-message',
@@ -13,7 +17,8 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./schedule-message.component.scss']
 })
 export class ScheduleMessageComponent implements OnInit {
-  API_URL = 'https://echodrop-backend.onrender.com/messages';
+  // API_URL = 'https://echodrop-backend.onrender.com/messages';
+  API_URL = `${environment.apiBaseUrl}/messages`;
 
   // Two modes:
   //  - 'message'  -> Email / SMS / WhatsApp (to others)
@@ -74,10 +79,15 @@ export class ScheduleMessageComponent implements OnInit {
     }
   ];
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toast: ToastService
+  ) { }
 
   ngOnInit(): void {
     this.applyDefaultChannel();
+    this.loadDraftIfAny();
   }
 
   private applyDefaultChannel() {
@@ -98,6 +108,40 @@ export class ScheduleMessageComponent implements OnInit {
       }
     } catch (e) {
       console.warn('Schedule: failed to read defaultChannel from userInfo', e);
+    }
+  }
+
+  // 🔹 NEW: load draft from sessionStorage if "Schedule again" was used
+  private loadDraftIfAny() {
+    try {
+      if (typeof window === 'undefined' || typeof window.sessionStorage === 'undefined') return;
+
+      const raw = sessionStorage.getItem(SCHEDULE_DRAFT_KEY);
+      if (!raw) return;
+
+      const draft = JSON.parse(raw);
+
+      this.message.recipient = draft.recipient || '';
+      this.message.platform = draft.platform || this.message.platform;
+      this.message.subject = draft.subject || '';
+      this.message.content = draft.content || '';
+
+      // Adjust mode based on platform
+      if (this.message.platform === 'telegram') {
+        this.mode = 'reminder';
+        // For personal Telegram reminders, recipient is ignored
+        this.message.recipient = '';
+      } else {
+        this.mode = 'message';
+      }
+
+      if (raw) {
+        // Clear the draft so it doesn't stick around forever
+        sessionStorage.removeItem(SCHEDULE_DRAFT_KEY);
+        this.toast.info('Draft loaded from previous message');
+      }
+    } catch (e) {
+      console.warn('Schedule: failed to load draft from sessionStorage', e);
     }
   }
 
@@ -143,17 +187,20 @@ export class ScheduleMessageComponent implements OnInit {
   onSubmit() {
     // Basic client-side checks
     if (!this.message.content || !this.message.scheduledTime) {
-      alert('Content and schedule time are required.');
+      // alert('Content and schedule time are required.');
+      this.toast.error('Content and schedule time are required.');
       return;
     }
 
     if (this.mode === 'message') {
       if (!this.message.recipient) {
-        alert('Recipient is required for Email/SMS/WhatsApp.');
+        // alert('Recipient is required for Email/SMS/WhatsApp.');
+        this.toast.error('Recipient is required for Email/SMS/WhatsApp.');
         return;
       }
       if (!this.isRecipientValid()) {
-        alert('Please enter a valid email or E.164 phone number.');
+        // alert('Please enter a valid email or E.164 phone number.');
+        this.toast.error('Please enter a valid email or E.164 phone number.');
         return;
       }
     }
@@ -170,19 +217,22 @@ export class ScheduleMessageComponent implements OnInit {
 
       this.http.post(`${this.API_URL}/create`, payload).subscribe({
         next: (res: any) => {
-          alert('✅ Message scheduled successfully!');
+          // alert('✅ Message scheduled successfully!');
+          this.toast.success('Message scheduled successfully!');
           setTimeout(() => {
             this.router.navigate(['/messages']);
           }, 500);
         },
         error: (err) => {
           console.error(err);
-          alert(err.error?.msg || '❌ Failed to schedule message');
+          // alert(err.error?.msg || '❌ Failed to schedule message');
+          this.toast.error(err.error?.msg || 'Failed to schedule message');
         }
       });
     } catch (e) {
       console.error('Error converting scheduledTime to UTC', e);
-      alert('Invalid schedule time.');
+      // alert('Invalid schedule time.');
+      this.toast.error('Invalid schedule time.');
     }
   }
 

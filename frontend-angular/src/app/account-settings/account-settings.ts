@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-account-settings',
@@ -23,7 +24,10 @@ export class AccountSettingsComponent implements OnInit {
     defaultChannel: 'email'
   };
 
-  constructor(private auth: AuthService) { }
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadUserFromCache();
@@ -33,7 +37,6 @@ export class AccountSettingsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // ✅ Skip when running on server (SSR) where window/localStorage don't exist
     if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
       this.loading = false;
       return;
@@ -66,6 +69,16 @@ export class AccountSettingsComponent implements OnInit {
     return !!this.user?.telegramLinked;
   }
 
+  // 🔹 NEW: expose admin status from AuthService
+  get isAdmin(): boolean {
+    return this.auth.isAdmin;
+  }
+
+  // 🔹 NEW: navigate to admin console
+  goToAdmin() {
+    this.router.navigate(['/admin']);
+  }
+
   onSave() {
     this.error = null;
     this.success = null;
@@ -81,7 +94,6 @@ export class AccountSettingsComponent implements OnInit {
         this.success = 'Profile updated successfully.';
         this.saving = false;
 
-        // Update local user + cache so Dashboard and others see latest data
         this.user.name = this.form.name;
         this.user.defaultChannel = this.form.defaultChannel;
         try {

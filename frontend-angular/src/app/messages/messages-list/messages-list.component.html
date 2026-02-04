@@ -53,7 +53,7 @@
               {{ msg.status | titlecase }}
             </span>
           </td>
-          <td class="actions">
+          <!-- <td class="actions">
             <button class="btn-action" (click)="openEdit(msg)" [disabled]="msg.status !== 'pending'"
               title="Edit message">
               <i class="fas fa-edit"></i>
@@ -68,6 +68,49 @@
               <i class="fas fa-times"></i>
               <span>Cancel</span>
             </button>
+          </td> -->
+          <td class="actions">
+            <!-- Pending actions -->
+            <ng-container *ngIf="msg.status === 'pending'; else nonPendingActions">
+
+              <!-- Edit pending message -->
+              <button class="btn-action" (click)="openEdit(msg)" [disabled]="msg.status !== 'pending'"
+                title="Edit message">
+                <i class="fas fa-edit"></i>
+                <span>Edit</span>
+              </button>
+
+              <!-- Quick reschedule +5 minutes -->
+              <button class="btn-action" (click)="reschedulePlus5(msg)" [disabled]="msg.status !== 'pending'"
+                title="Reschedule +5 minutes">
+                <i class="fas fa-clock"></i>
+                <span>Reschedule</span>
+              </button>
+
+              <!-- Cancel pending message -->
+              <button class="btn-action btn-danger" (click)="openCancelConfirm(msg)"
+                [disabled]="msg.status !== 'pending'" title="Cancel message">
+                <i class="fas fa-times"></i>
+                <span>Cancel</span>
+              </button>
+            </ng-container>
+
+            <!-- Non-pending actions: Sent / Failed / Cancelled -->
+            <ng-template #nonPendingActions>
+
+              <!-- Schedule again for non-pending -->
+              <button class="btn-action" *ngIf="msg.status !== 'pending'" (click)="scheduleAgain(msg)"
+                title="Schedule this message again">
+                <i class="fas fa-redo"></i>
+                <span>Again</span>
+              </button>
+
+              <!-- View logs -->
+              <button class="btn-action" (click)="viewLogs(msg)" title="View Logs">
+                <i class="fas fa-history"></i>
+                <span>Logs</span>
+              </button>
+            </ng-template>
           </td>
         </tr>
       </tbody>
@@ -267,4 +310,50 @@
       </div>
     </div>
   </div>
+
+  <!-- ====================== CANCEL CONFIRM MODAL ====================== -->
+  <div *ngIf="showCancelConfirm" class="ed-modal-overlay">
+    <div class="ed-modal">
+      <div class="ed-modal__header">
+        <div class="ed-modal__title">
+          <span class="ed-modal__icon ed-modal__icon--logs">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+          <div>
+            <h3>Cancel Scheduled Message?</h3>
+            <p class="ed-modal__subtitle">
+              This will prevent this message from being sent in the future.
+            </p>
+          </div>
+        </div>
+        <button class="ed-modal__close-btn" type="button" (click)="closeCancelConfirm()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="ed-modal__body">
+        <p>
+          Are you sure you want to cancel this scheduled message?
+        </p>
+        <div *ngIf="cancelTarget" class="cancel-preview">
+          <p><strong>Recipient:</strong> {{ cancelTarget.recipient || '—' }}</p>
+          <p><strong>Platform:</strong> {{ cancelTarget.platform | titlecase }}</p>
+          <p><strong>Scheduled:</strong> {{ cancelTarget.scheduledTime | date:'medium' }}</p>
+          <p class="cancel-preview__content">
+            <strong>Content:</strong> {{ cancelTarget.content }}
+          </p>
+        </div>
+      </div>
+
+      <div class="ed-modal__footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCancelConfirm()">
+          Keep scheduled
+        </button>
+        <button type="button" class="btn btn-danger" (click)="confirmCancel()">
+          Yes, cancel it
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -68,6 +68,18 @@
                 </p>
             </section>
 
+            <!-- Admin tools (only visible for admins) -->
+            <section class="section admin-tools" *ngIf="isAdmin">
+                <h2>Admin tools</h2>
+                <p class="admin-tools__text">
+                    You have admin access to EchoDrop. Open the Admin Console to view
+                    global stats, manage users, and monitor failed messages.
+                </p>
+                <button type="button" class="btn btn-primary" (click)="goToAdmin()">
+                    Open Admin Console
+                </button>
+            </section>
+
             <!-- Actions -->
             <div class="actions">
                 <button type="submit" class="btn btn-primary" [disabled]="saving">

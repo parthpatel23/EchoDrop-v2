@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../shared/toast.service';
+
 
 @Component({
   selector: 'app-login',
@@ -18,7 +20,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toast: ToastService
   ) {}
 
   // Manual login via AuthService (uses BACKEND_URL from AuthService)
@@ -35,7 +38,8 @@ export class LoginComponent {
       },
       error: (err) => {
         console.error('Login failed', err);
-        alert(err.error?.msg || 'Login failed');
+        // alert(err.error?.msg || 'Login failed');
+        this.toast.error(err.error?.msg || 'Login failed');
       }
     });
   }

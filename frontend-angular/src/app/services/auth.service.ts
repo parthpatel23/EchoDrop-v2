@@ -3,13 +3,16 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   // private API_URL = 'http://localhost:5000';
-  private API_URL = 'https://echodrop-backend.onrender.com'; // your Render URL
+  // private API_URL = 'https://echodrop-backend.onrender.com'; // your Render URL
+  private API_URL = environment.apiBaseUrl;
+
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
   isLoggedIn$ = this.loggedIn.asObservable();
 
@@ -58,6 +61,20 @@ export class AuthService {
     } catch (e) {
       console.error('Failed to decode JWT', e);
       return false;
+    }
+  }
+
+  get currentEmail(): string | null {
+    const token = this.getToken();
+    if (!token || !this.isBrowser()) return null;
+
+    try {
+      const payloadPart = token.split('.')[1];
+      const payloadJson = atob(payloadPart);
+      const payload = JSON.parse(payloadJson);
+      return payload.email || null;
+    } catch {
+      return null;
     }
   }
 

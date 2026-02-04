@@ -3,6 +3,8 @@ import { Component, OnInit, ChangeDetectorRef, Inject, PLATFORM_ID } from '@angu
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
+import { ToastService } from '../shared/toast.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,14 +17,16 @@ export class DashboardComponent implements OnInit {
   userData: any = {};
   loading = true;
   // API_URL = 'http://localhost:5000';
-  private API_URL = 'https://echodrop-backend.onrender.com'; // your Render URL
+  // private API_URL = 'https://echodrop-backend.onrender.com'; // your Render URL
+  private API_URL = environment.apiBaseUrl;
 
   constructor(
     private auth: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    @Inject(PLATFORM_ID) private platformId: any
+    @Inject(PLATFORM_ID) private platformId: any,
+    private toast: ToastService
   ) { }
 
   ngOnInit() {
@@ -70,21 +74,24 @@ export class DashboardComponent implements OnInit {
   private checkForLinkingMessages() {
     this.route.queryParams.subscribe(params => {
       if (params['link_success']) {
-        alert('✅ Google account linked successfully!');
+        // alert('✅ Google account linked successfully!');
+        this.toast.success('Google account linked successfully!');
         this.router.navigate([], {
           queryParams: { link_success: null },
           queryParamsHandling: 'merge'
         });
       }
       if (params['google_already_linked']) {
-        alert('❌ This Google account is already linked to another user.');
+        // alert('❌ This Google account is already linked to another user.');
+        this.toast.error('This Google account is already linked to another user.');
         this.router.navigate([], {
           queryParams: { google_already_linked: null },
           queryParamsHandling: 'merge'
         });
       }
       if (params['error'] === 'link_failed') {
-        alert('❌ Failed to link Google account. Please try again.');
+        // alert('❌ Failed to link Google account. Please try again.');
+        this.toast.error('Failed to link Google account. Please try again.');
         this.router.navigate([], {
           queryParams: { error: null },
           queryParamsHandling: 'merge'

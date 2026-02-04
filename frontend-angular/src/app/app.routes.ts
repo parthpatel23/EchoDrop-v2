@@ -11,12 +11,13 @@ import { ContactUsComponent } from './pages/contact-us/contact-us';
 import { ScheduleMessageComponent } from './messages/schedule-message/schedule-message.component';
 import { MessagesListComponent } from './messages/messages-list/messages-list.component';
 import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'admin', component: AdminDashboardComponent, data: { adminOnly: true }, canActivate: [AuthGuard] },
+  { path: 'admin', component: AdminDashboardComponent, data: { adminOnly: true }, canActivate: [AuthGuard, AdminGuard] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'account', component: AccountSettingsComponent, canActivate: [AuthGuard] },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },

@@ -115,6 +115,7 @@
             <th>Admin</th>
             <th>Messages</th>
             <th>Joined</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -124,6 +125,13 @@
             <td>{{ u.isAdmin ? 'Yes' : 'No' }}</td>
             <td>{{ u.messagesCount }}</td>
             <td>{{ u.joinedAt | date: 'shortDate' }}</td>
+            <td>
+              <!-- Don't show the button on yourself -->
+              <button *ngIf="u.email !== currentAdminEmail" type="button" class="btn btn-secondary"
+                (click)="toggleAdmin(u)">
+                {{ u.isAdmin ? 'Remove admin' : 'Make admin' }}
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>

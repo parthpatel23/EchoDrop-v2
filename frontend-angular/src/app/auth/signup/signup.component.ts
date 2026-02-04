@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../environments/environment';
+import { ToastService } from '../../shared/toast.service';
 
 @Component({
   selector: 'app-signup',
@@ -18,9 +20,14 @@ export class SignupComponent {
   email: string = '';
   password: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toast: ToastService
+  ) {}
 
-  private API_URL = 'https://echodrop-backend.onrender.com'; // your Render backend URL
+  // private API_URL = 'https://echodrop-backend.onrender.com'; // your Render backend URL
+  private API_URL = environment.apiBaseUrl;
 
   // Manual signup
 onSignup() {
@@ -33,12 +40,14 @@ onSignup() {
 
   this.http.post(`${this.API_URL}/auth/signup`, body).subscribe({
     next: (res: any) => {
-      alert(res.msg || "Signup successful! Please login.");
+      // alert(res.msg || "Signup successful! Please login.");
+      this.toast.success(res.msg || 'Signup successful! Please login.');
       this.router.navigate(['/login']); // ✅ redirect to login page
     },
     error: (err) => {
       console.error('Signup failed', err);
-      alert(err.error?.msg || 'Signup failed');
+      // alert(err.error?.msg || 'Signup failed');
+      this.toast.error(err.error?.msg || 'Signup failed');
     }
   });
 }
