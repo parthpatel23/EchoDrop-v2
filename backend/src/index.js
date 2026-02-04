@@ -26,7 +26,7 @@ app.use(cors({
     "https://echodrop-c4a0d.web.app",       // Firebase Hosting URL
     "https://echodrop-c4a0d.firebaseapp.com"
   ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: false   // using JWT in Authorization, cookies not needed
 }));
 app.use(passport.initialize());
