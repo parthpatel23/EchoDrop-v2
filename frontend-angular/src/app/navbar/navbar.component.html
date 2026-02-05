@@ -28,10 +28,31 @@
         <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
         <li><a routerLink="/schedule" routerLinkActive="active">Schedule</a></li>
         <li><a routerLink="/messages" routerLinkActive="active">My Messages</a></li>
-        <!-- <li><a *ngIf="auth.isAdmin" routerLink="/admin" routerLinkActive="active">
-            Admin
-          </a></li> -->
-        <li><a (click)="logout()">Logout</a></li>
+
+        <!-- Profile menu -->
+        <li class="profile-menu">
+          <button class="profile-trigger" type="button" (click)="toggleProfileMenu()">
+            <div class="avatar">
+              {{ userInitial }}
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">{{ userDisplayName }}</span>
+              <span class="profile-role" *ngIf="auth.isOwner || auth.isAdmin">
+                {{ roleLabel }}
+              </span>
+            </div>
+            <i class="fas fa-chevron-down caret"></i>
+          </button>
+
+          <div class="profile-dropdown" [class.open]="isProfileOpen">
+            <a (click)="goTo('/account')">Account Settings</a>
+            <a *ngIf="auth.isAdmin || auth.isOwner" (click)="goTo('/admin')">
+              Admin Console
+            </a>
+            <hr />
+            <a (click)="logout()">Logout</a>
+          </div>
+        </li>
       </ng-template>
     </ul>
   </div>

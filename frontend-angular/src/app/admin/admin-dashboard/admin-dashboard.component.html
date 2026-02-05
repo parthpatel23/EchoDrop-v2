@@ -5,7 +5,7 @@
       <p>Monitor users, messages, and delivery health for EchoDrop.</p>
     </div>
     <div class="admin-badge" *ngIf="auth.isOwner || auth.isAdmin">
-      <span *ngIf="auth.isOwner" class="badge badge--owner">Owner Admin</span>
+      <span *ngIf="auth.isOwner" class="badge badge--owner">Owner</span>
       <span *ngIf="!auth.isOwner && auth.isAdmin" class="badge badge--admin">Admin</span>
     </div>
   </div>
@@ -126,7 +126,17 @@
           <tr *ngFor="let u of users">
             <td>{{ u.email }}</td>
             <td>{{ u.name || '—' }}</td>
-            <td>{{ u.isAdmin ? 'Yes' : 'No' }}</td>
+            <td>
+              <span class="role-chip" 
+              [ngClass]="{
+                'role-chip--owner': u.isOwner,
+                'role-chip--admin': !u.isOwner && u.isAdmin,
+                'role-chip--user': !u.isOwner && !u.isAdmin
+              }"
+              >
+                {{ u.isOwner ? 'Owner' : (u.isAdmin ? 'Admin' : 'User') }}
+              </span>
+            </td>
             <td>{{ u.messagesCount }}</td>
             <td>{{ u.joinedAt | date: 'shortDate' }}</td>
             <td *ngIf="isOwner">

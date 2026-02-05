@@ -78,6 +78,7 @@ router.get("/users", async (req, res) => {
           email: 1,
           name: 1,
           isAdmin: 1,
+          isOwner: 1,
           joinedAt: 1,
           messagesCount: 1,
         },
