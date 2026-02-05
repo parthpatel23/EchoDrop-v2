@@ -1,5 +1,5 @@
 // AngularApp\EchoDrop-v2\frontend-angular\src\app\navbar\navbar.component.ts
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID, ElementRef, HostListener } from '@angular/core';
 import { RouterModule, Router, NavigationEnd, UrlTree } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../services/auth.service';
@@ -20,13 +20,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   // Profile menu
   isProfileOpen = false;
-  userName: string | null = null;   // from userInfo
+
   private authSubscription!: Subscription;
   private routeSubscription!: Subscription;
 
   constructor(
     private router: Router,
     public auth: AuthService,
+    private elRef: ElementRef,          // for click detection
     @Inject(PLATFORM_ID) private platformId: any // Add platform injection
   ) { }
 
@@ -43,18 +44,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     // Initialize with current auth state
     this.isLoggedIn = this.auth.isLoggedIn();
-    this.loadUserDisplay();
-    console.log('Navbar initialized, isLoggedIn:', this.isLoggedIn);
 
-    // Subscribe to authentication state changes
+
+    // React to login/logout
     this.authSubscription = this.auth.isLoggedIn$.subscribe(
       (loggedIn) => {
         this.isLoggedIn = loggedIn;
-        console.log('Navbar auth state changed:', loggedIn);
-        if (loggedIn) {
-          this.loadUserDisplay();
-        } else {
-          this.userName = null;
+        if (!loggedIn) {
+          this.isProfileOpen = false;
         }
       }
     );
@@ -65,11 +62,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         const currentRoute = this.router.url;
         this.showNavbar = !['/login', '/signup'].includes(currentRoute);
-        // console.log('Route changed:', currentRoute, 'Show navbar:', this.showNavbar);
 
         this.isLoggedIn = this.auth.isLoggedIn();
-        // console.log('Auth state rechecked after route change:', this.isLoggedIn);
-        this.loadUserDisplay();   // 🔹 update name/email from userInfo or token
 
         // Close menus on navigation
         this.isCollapsed = true;
@@ -86,50 +80,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadingUser = false;
-
-  private loadUserDisplay() {
-    this.userName = null;
+  // Close dropdown when clicking outside navbar
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
     if (!this.isBrowser()) return;
-
-    // Try cache first
-    try {
-      const raw = localStorage.getItem('userInfo');
-      if (raw) {
-        const user = JSON.parse(raw);
-        this.userName = user.name || null;
-      }
-    } catch (e) {
-      console.warn('Navbar: failed to read userInfo', e);
-    }
-
-    // If logged in but no cached user, fetch once
-    if (this.auth.isLoggedIn() && !this.loadingUser) {
-      this.loadingUser = true;
-      this.auth.getCurrentUser().subscribe({
-        next: (user) => {
-          this.loadingUser = false;
-          try {
-            localStorage.setItem('userInfo', JSON.stringify(user));
-          } catch (e) {
-            console.warn('Navbar: failed to cache userInfo', e);
-          }
-          this.userName = user.name || null;
-        },
-        error: (err) => {
-          this.loadingUser = false;
-          console.error('Navbar: failed to load current user', err);
-        }
-      });
+    const target = event.target as HTMLElement;
+    const clickedInside = this.elRef.nativeElement.contains(target);
+    if (!clickedInside) {
+      this.isProfileOpen = false;
     }
   }
 
-  get userEmail(): string | null {
-    return this.auth.currentEmail;
-  }
-
+  // Display helpers
   get userDisplayName(): string {
-    return this.userName || this.userEmail || 'User';
+    return this.auth.currentName || this.auth.currentEmail || 'User';
   }
 
   get userInitial(): string {

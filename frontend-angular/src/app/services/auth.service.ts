@@ -50,18 +50,18 @@ export class AuthService {
 
   /** convenient owner flag decoded from JWT */
   get isOwner(): boolean {
-  const token = this.getToken();
-  if (!token || !this.isBrowser()) return false;
+    const token = this.getToken();
+    if (!token || !this.isBrowser()) return false;
 
-  try {
-    const payloadPart = token.split('.')[1];
-    const payloadJson = atob(payloadPart);
-    const payload = JSON.parse(payloadJson);
-    return !!payload.isOwner;
-  } catch {
-    return false;
+    try {
+      const payloadPart = token.split('.')[1];
+      const payloadJson = atob(payloadPart);
+      const payload = JSON.parse(payloadJson);
+      return !!payload.isOwner;
+    } catch {
+      return false;
+    }
   }
-}
 
   /** convenient admin flag decoded from JWT */
   get isAdmin(): boolean {
@@ -77,6 +77,19 @@ export class AuthService {
     } catch (e) {
       console.error('Failed to decode JWT', e);
       return false;
+    }
+  }
+
+  get currentName(): string | null {
+    const token = this.getToken();
+    if (!token || !this.isBrowser()) return null;
+
+    try {
+      const payloadJson = atob(token.split('.')[1]);
+      const payload = JSON.parse(payloadJson);
+      return payload.name || null;
+    } catch {
+      return null;
     }
   }
 

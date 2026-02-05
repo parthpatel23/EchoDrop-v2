@@ -16,6 +16,7 @@ function generateToken(user) {
     {
       id: user._id,
       email: user.email,
+      name: user.name,
       isAdmin: user.isAdmin,
       isOwner: user.isOwner
     },

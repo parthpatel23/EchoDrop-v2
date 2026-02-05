@@ -47,7 +47,7 @@
           <div class="profile-dropdown" [class.open]="isProfileOpen">
             <a (click)="goTo('/account')">Account Settings</a>
             <a *ngIf="auth.isAdmin || auth.isOwner" (click)="goTo('/admin')">
-              Admin Console
+              {{ auth.isOwner ? 'Owner Console' : 'Admin Console' }}
             </a>
             <hr />
             <a (click)="logout()">Logout</a>

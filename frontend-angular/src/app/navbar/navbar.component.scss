@@ -257,13 +257,16 @@
 
   .nav-links {
     width: 100%;
-    max-height: 0;
-    overflow: hidden;
+    // max-height: 0;
+    max-height: none;
+    overflow: visible;
+    // overflow: hidden;
     transition: max-height 0.2s ease;
   }
 
   .nav-links.open {
-    max-height: 260px;
+    // max-height: 400px;
+    max-height: none;
   }
 
   .nav-links ul {
@@ -286,23 +289,12 @@
     justify-content: flex-start;
   }
 
-  .profile-trigger:hover {
-    background: rgba(15, 23, 42, 0.12);
-    /* a bit softer */
-  }
-
   .profile-dropdown {
     position: static;
     margin-top: 4px;
     box-shadow: none;
     border-radius: 8px;
     background: rgba(15, 23, 42, 0.15);
-  }
-
-  .profile-dropdown.open {
-    // opacity: 1;
-    // pointer-events: auto;
-    transform: none;
   }
 
   .profile-dropdown a {
