@@ -193,6 +193,7 @@
 }
 
 .profile-dropdown {
+  display: none;  /* hidden by default */
   position: absolute;
   right: 0;
   top: 110%;
@@ -202,14 +203,15 @@
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
   padding: 6px 0;
+  z-index: 9999;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-4px);
   transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 9999;
 }
 
 .profile-dropdown.open {
+  display: block;   /* only appear when open */
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -257,16 +259,13 @@
 
   .nav-links {
     width: 100%;
-    // max-height: 0;
-    max-height: none;
-    overflow: visible;
-    // overflow: hidden;
+    max-height: 0;
+    overflow: hidden;
     transition: max-height 0.2s ease;
   }
 
   .nav-links.open {
-    // max-height: 400px;
-    max-height: none;
+    max-height: 400px;
   }
 
   .nav-links ul {

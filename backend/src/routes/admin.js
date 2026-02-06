@@ -51,7 +51,27 @@ router.get("/stats", async (req, res) => {
 // GET /admin/users
 router.get("/users", async (req, res) => {
   try {
-    const users = await User.aggregate([
+    const {
+      search = "",
+      hasMessages = "all",
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    const pageNum = Math.max(parseInt(page) || 1, 1);
+    const pageSize = Math.max(parseInt(limit) || 10, 1);
+
+    // Build text search condition (email OR name)
+    const searchMatch = {};
+    if (search) {
+      const regex = new RegExp(search, "i");
+      searchMatch.$or = [
+        { email: regex },
+        { name: regex }
+      ];
+    }
+
+    const pipeline = [
       {
         $lookup: {
           from: "scheduledmessages",       // collection name for ScheduledMessage
@@ -72,21 +92,55 @@ router.get("/users", async (req, res) => {
           }
         }
       },
+      // Remove heavy messages array and sensitive fields
       {
         $project: {
-          _id: 1,
-          email: 1,
-          name: 1,
-          isAdmin: 1,
-          isOwner: 1,
-          joinedAt: 1,
-          messagesCount: 1,
-        },
-      },
-      { $sort: { joinedAt: -1 } },
-    ]);
+          password: 0,
+          googleAccessToken: 0,
+          googleRefreshToken: 0,
+          messages: 0
+        }
+      }
+    ];
 
-    res.json({ users });
+    // Apply search filter if present
+    if (Object.keys(searchMatch).length > 0) {
+      pipeline.push({ $match: searchMatch });
+    }
+
+    // Filter on messagesCount
+    if (hasMessages === "yes") {
+      pipeline.push({ $match: { messagesCount: { $gt: 0 } } });
+    } else if (hasMessages === "no") {
+      pipeline.push({ $match: { messagesCount: 0 } });
+    }
+
+    // Sort by joinedAt (newest first)
+    pipeline.push({ $sort: { joinedAt: -1 } });
+
+    // Pagination + total count via $facet
+    pipeline.push({
+      $facet: {
+        data: [
+          { $skip: (pageNum - 1) * pageSize },
+          { $limit: pageSize }
+        ],
+        totalCount: [
+          { $count: count }
+        ]
+      }
+    });
+
+    const result = await User.aggregate(pipeline);
+    const users = result[0].data || [];
+    const total = result[0].totalCount[0]?.count || 0;
+
+    res.json({ 
+      users,
+      total,
+      page: pageNum,
+      limit: pageSize,
+    });
   } catch (err) {
     console.error("Admin users error:", err);
     res.status(500).json({ msg: "Server error", error: err.message });

@@ -1,7 +1,9 @@
+<!-- AngularApp\EchoDrop-v2\frontend-angular\src\app\admin\admin-dashboard\admin-dashboard.component.html -->
 <div class="admin-container">
   <div class="admin-header">
-    <div>
-      <h1>Admin Console</h1>
+    <div *ngIf="auth.isOwner || auth.isAdmin">
+      <h1 *ngIf="auth.isOwner">Owner Console</h1>
+      <h1 *ngIf="!auth.isOwner && auth.isAdmin">Admin Console</h1>
       <p>Monitor users, messages, and delivery health for EchoDrop.</p>
     </div>
     <div class="admin-badge" *ngIf="auth.isOwner || auth.isAdmin">
@@ -106,8 +108,20 @@
     <div class="admin-section__header">
       <h2>Users</h2>
       <span class="admin-section__badge">
-        {{ users.length }} total
+        {{ userTotal }} total
       </span>
+    </div>
+
+    <!-- Filters row -->
+    <div class="users-filters">
+      <input type="text" placeholder="Search by email or name" [(ngModel)]="userSearch"
+        (ngModelChange)="onUserSearchChange()" />
+
+      <select [(ngModel)]="userHasMessages" (change)="onHasMessagesChange($event.target.value)">
+        <option value="all">All users</option>
+        <option value="yes">Has messages</option>
+        <option value="no">No messages</option>
+      </select>
     </div>
 
     <div *ngIf="users.length > 0" class="table-wrapper">
@@ -116,7 +130,7 @@
           <tr>
             <th>Email</th>
             <th>Name</th>
-            <th>Admin</th>
+            <th>Role</th>
             <th>Messages</th>
             <th>Joined</th>
             <th *ngIf="isOwner">Actions</th>
@@ -127,13 +141,11 @@
             <td>{{ u.email }}</td>
             <td>{{ u.name || '—' }}</td>
             <td>
-              <span class="role-chip" 
-              [ngClass]="{
+              <span class="role-chip" [ngClass]="{
                 'role-chip--owner': u.isOwner,
                 'role-chip--admin': !u.isOwner && u.isAdmin,
                 'role-chip--user': !u.isOwner && !u.isAdmin
-              }"
-              >
+              }">
                 {{ u.isOwner ? 'Owner' : (u.isAdmin ? 'Admin' : 'User') }}
               </span>
             </td>
@@ -141,8 +153,8 @@
             <td>{{ u.joinedAt | date: 'shortDate' }}</td>
             <td *ngIf="isOwner">
               <!-- Don't show button for yourself or for the owner account -->
-              <button *ngIf="u.email !== currentAdminEmail && !u.isOwner" type="button" class="btn btn-secondary"
-                (click)="openRoleConfirm(u)">
+              <button *ngIf="u.email !== currentAdminEmail && !u.isOwner" type="button" class="btn-role"
+                [ngClass]="u.isAdmin ? 'btn-role--remove' : 'btn-role--make'" (click)="openRoleConfirm(u)">
                 {{ u.isAdmin ? 'Remove admin' : 'Make admin' }}
               </button>
             </td>
@@ -151,36 +163,48 @@
       </table>
     </div>
 
+    <!-- ===== ADMIN ROLE CONFIRM MODAL ===== -->
+    <div *ngIf="showRoleConfirm" class="admin-modal-overlay">
+      <div class="admin-modal">
+        <div class="admin-modal__header">
+          <h3>Change Admin Role</h3>
+          <button type="button" class="admin-modal__close" (click)="closeRoleConfirm()">
+            ×
+          </button>
+        </div>
+        <div class="admin-modal__body" *ngIf="roleTarget">
+          <p>
+            Are you sure you want to
+            <strong>{{ roleTargetNewState ? 'make' : 'remove' }}</strong>
+            admin access for <strong>{{ roleTarget.email }}</strong>?
+          </p>
+        </div>
+        <div class="admin-modal__footer">
+          <button type="button" class="btn btn-secondary" (click)="closeRoleConfirm()">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary" (click)="confirmRoleChange()">
+            Yes, change role
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state for filtered users -->
     <p *ngIf="!loading && users.length === 0 && !error" class="empty-hint">
-      No users found.
+      No users match your filters.
     </p>
   </div>
 
-  <!-- ===== ADMIN ROLE CONFIRM MODAL ===== -->
-  <div *ngIf="showRoleConfirm" class="admin-modal-overlay">
-    <div class="admin-modal">
-      <div class="admin-modal__header">
-        <h3>Change Admin Role</h3>
-        <button type="button" class="admin-modal__close" (click)="closeRoleConfirm()">
-          ×
-        </button>
-      </div>
-      <div class="admin-modal__body" *ngIf="roleTarget">
-        <p>
-          Are you sure you want to
-          <strong>{{ roleTargetNewState ? 'make' : 'remove' }}</strong>
-          admin access for <strong>{{ roleTarget.email }}</strong>?
-        </p>
-      </div>
-      <div class="admin-modal__footer">
-        <button type="button" class="btn btn-secondary" (click)="closeRoleConfirm()">
-          Cancel
-        </button>
-        <button type="button" class="btn btn-primary" (click)="confirmRoleChange()">
-          Yes, change role
-        </button>
-      </div>
-    </div>
+  <!-- Pagination controls -->
+  <div *ngIf="userTotalPages > 1" class="users-pagination">
+    <button type="button" (click)="goToUserPage(userPage - 1)" [disabled]="userPage === 1">
+      ‹ Prev
+    </button>
+    <span>Page {{ userPage }} of {{ userTotalPages }}</span>
+    <button type="button" (click)="goToUserPage(userPage + 1)" [disabled]="userPage === userTotalPages">
+      Next ›
+    </button>
   </div>
 
 </div>

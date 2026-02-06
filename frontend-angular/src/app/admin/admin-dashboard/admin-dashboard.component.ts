@@ -1,15 +1,16 @@
-// src/app/admin/admin-dashboard/admin-dashboard.component.ts
+// AngularApp\EchoDrop-v2\frontend-angular\src\app\admin\admin-dashboard\admin-dashboard.component.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../shared/toast.service';
 import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -23,6 +24,13 @@ export class AdminDashboardComponent implements OnInit {
   stats: any = null;
   users: any[] = [];
   failedMessages: any[] = [];
+
+  // --- Users filters & pagination ---
+  userSearch = '';
+  userHasMessages: 'all' | 'yes' | 'no' = 'all';
+  userPage = 1;
+  userPageSize = 10;
+  userTotal = 0;
 
   // --- Admin role change modal state ---
   showRoleConfirm = false;
@@ -55,6 +63,52 @@ export class AdminDashboardComponent implements OnInit {
     return this.auth.isOwner;
   }
 
+  loadUsers() {
+    const params: any = {
+      page: this.userPage,
+      limit: this.userPageSize
+    };
+
+    if (this.userSearch.trim()) {
+      params.search = this.userSearch.trim();
+    }
+    if (this.userHasMessages !== 'all') {
+      params.hasMessages = this.userHasMessages;
+    }
+
+    this.http.get<any>(`${this.API_URL}/users`, { params }).subscribe({
+      next: (res) => {
+        this.users = res.users || [];
+        this.userTotal = res.total || 0;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('[Admin] users error', err);
+      }
+    });
+  }
+
+  onUserSearchChange() {
+    this.userPage = 1;
+    this.loadUsers();
+  }
+
+  onHasMessagesChange(value: string) {
+    this.userHasMessages = value as any;
+    this.userPage = 1;
+    this.loadUsers();
+  }
+
+  get userTotalPages(): number {
+    return Math.max(Math.ceil(this.userTotal / this.userPageSize), 1);
+  }
+
+  goToUserPage(page: number) {
+    if (page < 1 || page > this.userTotalPages) return;
+    this.userPage = page;
+    this.loadUsers();
+  }
+
   loadAll() {
     this.loading = true;
     this.error = null;
@@ -62,13 +116,11 @@ export class AdminDashboardComponent implements OnInit {
     // --- Stats ---
     this.http.get<any>(`${this.API_URL}/stats`).subscribe({
       next: (res) => {
-        console.log('[Admin] stats response', res);
         this.stats = res;
         this.loading = false;
         this.cdr.detectChanges(); // ensure view updates
       },
       error: (err) => {
-        console.error('[Admin] stats error', err);
         this.loading = false;
         if (err.status === 403) {
           this.error = 'You do not have admin access.';
@@ -81,24 +133,14 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
 
-    // --- Users ---
-    this.http.get<any>(`${this.API_URL}/users`).subscribe({
-      next: (res) => {
-        console.log('[Admin] users response', res);
-        this.users = res.users || [];
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('[Admin] users error', err);
-      }
-    });
+    // --- Users with filters/pagination ---
+    this.loadUsers();
 
     // --- Failed messages ---
     this.http
       .get<any>(`${this.API_URL}/messages?status=failed&limit=50`)
       .subscribe({
         next: (res) => {
-          console.log('[Admin] messages response', res);
           this.failedMessages = res.messages || [];
           this.cdr.detectChanges();
         },
