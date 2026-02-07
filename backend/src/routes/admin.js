@@ -10,9 +10,41 @@ const router = express.Router();
 // All admin routes require auth + admin
 router.use(requireAuth, requireAdmin);
 
+function getRange(range) {
+  const now = new Date();
+  if (!range || range === "all") return null;
+
+  if (range === "today") {
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const end = new Date(start); end.setDate(end.getDate() + 1);
+    return { start, end };
+  }
+
+  if (range === "7d") {
+    const end = now;
+    const start = new Date(now); start.setDate(start.getDate() - 7);
+    return { start, end };
+  }
+
+  if (range === "month") {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    return { start, end };
+  }
+
+  return null;
+}
+
 // GET /admin/stats
 router.get("/stats", async (req, res) => {
   try {
+    const { range = "all" } = req.query;
+    const r = getRange(range);
+
+    // choose the date field you want stats to be based on:
+    // scheduledTime OR createdAt (pick one)
+    const dateFilter = r ? { scheduledTime: { $gte: r.start, $lt: r.end } } : {};
+
     const [
       totalUsers,
       totalMessages,
@@ -22,13 +54,13 @@ router.get("/stats", async (req, res) => {
       failedCount,
       cancelledCount,
     ] = await Promise.all([
-      User.countDocuments(),
-      ScheduledMessage.countDocuments(),
-      ScheduledMessage.countDocuments({ status: "pending" }),
-      ScheduledMessage.countDocuments({ status: "processing" }),
-      ScheduledMessage.countDocuments({ status: "sent" }),
-      ScheduledMessage.countDocuments({ status: "failed" }),
-      ScheduledMessage.countDocuments({ status: "cancelled" }),
+      User.countDocuments(), // usually keep all-time
+      ScheduledMessage.countDocuments(dateFilter),
+      ScheduledMessage.countDocuments({ ...dateFilter, status: "pending" }),
+      ScheduledMessage.countDocuments({ ...dateFilter, status: "processing" }),
+      ScheduledMessage.countDocuments({ ...dateFilter, status: "sent" }),
+      ScheduledMessage.countDocuments({ ...dateFilter, status: "failed" }),
+      ScheduledMessage.countDocuments({ ...dateFilter, status: "cancelled" }),
     ]);
 
     res.json({

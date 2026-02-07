@@ -46,6 +46,30 @@ body {
   --border:    #e5e7eb;
 }
 
+.ed-tooltip-overlay {
+  pointer-events: none; // tooltip should not block mouse
+}
+
+.ed-tooltip-panel {
+  max-width: 280px;
+  background: rgba(17, 24, 39, 0.96); // slate-900
+  color: #f9fafb;                     // gray-50
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.25;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+
+  transform: translateY(2px);
+  animation: edTooltipIn 120ms ease-out forwards;
+}
+
+@keyframes edTooltipIn {
+  to { transform: translateY(0); }
+}
+
 /* Utility Classes */
 .text-center { text-align: center; }
 .text-left { text-align: left; }

@@ -41,22 +41,24 @@
       <p class="card-subtitle">All scheduled messages</p>
     </div>
 
-    <div class="card card--status pending">
+    <div class="card card--status pending" edTooltip="Pending: queued and waiting to be processed."
+      edTooltipPosition="top">
       <h3>Pending</h3>
       <p class="metric">{{ stats.byStatus?.pending }}</p>
     </div>
 
-    <div class="card card--status sent">
+    <div class="card card--status sent" edTooltip="Sent: delivered successfully." edTooltipPosition="top">
       <h3>Sent</h3>
       <p class="metric">{{ stats.byStatus?.sent }}</p>
     </div>
 
-    <div class="card card--status failed">
+    <div class="card card--status failed" edTooltip="Failed: delivery attempt failed (provider/network/auth/etc)."
+      edTooltipPosition="top">
       <h3>Failed</h3>
       <p class="metric">{{ stats.byStatus?.failed }}</p>
     </div>
 
-    <div class="card card--status cancelled">
+    <div class="card card--status cancelled" edTooltip="Cancelled: cancelled before sending." edTooltipPosition="top">
       <h3>Cancelled</h3>
       <p class="metric">{{ stats.byStatus?.cancelled }}</p>
     </div>
@@ -87,7 +89,9 @@
           <tr *ngFor="let msg of failedMessages">
             <td>{{ msg.createdBy?.email || '—' }}</td>
             <td>{{ msg.recipient || '—' }}</td>
-            <td>{{ msg.platform | titlecase }}</td>
+            <td [edTooltip]="platformTooltip(msg.platform)" edTooltipPosition="top">
+              {{ msg.platform | titlecase }}
+            </td>
             <td class="truncate" [title]="msg.content">{{ msg.content }}</td>
             <td>{{ msg.scheduledTime | date: 'short' }}</td>
             <td>

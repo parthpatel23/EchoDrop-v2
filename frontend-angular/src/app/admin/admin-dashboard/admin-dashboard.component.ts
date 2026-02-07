@@ -6,11 +6,13 @@ import { environment } from '../../../environments/environment';
 import { ToastService } from '../../shared/toast.service';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { EdTooltipDirective } from '../../shared/tooltip/ed-tooltip.directive';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, OverlayModule, EdTooltipDirective],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -22,6 +24,7 @@ export class AdminDashboardComponent implements OnInit {
   error: string | null = null;
 
   stats: any = null;
+  statsRange: 'all' | 'today' | '7d' | 'month' = 'all';
   users: any[] = [];
   failedPage = 1;
   failedPageSize = 10;
@@ -54,8 +57,31 @@ export class AdminDashboardComponent implements OnInit {
   //   });
   // }
 
+  platformTooltip(platform: string): string {
+    switch ((platform || '').toLowerCase()) {
+      case 'email': return 'Email delivery (via connected email provider).';
+      case 'sms': return 'SMS delivery (via SMS gateway/provider).';
+      case 'whatsapp': return 'WhatsApp delivery (via WhatsApp integration).';
+      case 'telegram': return 'Telegram delivery (via Telegram bot/integration).';
+      default: return platform || '';
+    }
+  }
+
   ngOnInit() {
     this.loadAll();
+  }
+
+  onStatsRangeChange(range: any) {
+    this.statsRange = range;
+    this.loadStats();
+  }
+
+  loadStats() {
+    this.loading = true;
+    this.http.get<any>(`${this.API_URL}/stats`, { params: { range: this.statsRange } }).subscribe({
+      next: (res) => { this.stats = res; this.loading = false; this.cdr.detectChanges(); },
+      error: (err) => { this.loading = false; this.error = err.error?.msg || 'Failed to load admin stats.'; this.cdr.detectChanges(); }
+    });
   }
 
   get failedTotalPages(): number {
