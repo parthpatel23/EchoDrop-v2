@@ -6,13 +6,11 @@ import { environment } from '../../../environments/environment';
 import { ToastService } from '../../shared/toast.service';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
-import { OverlayModule } from '@angular/cdk/overlay';
-import { EdTooltipDirective } from '../../shared/tooltip/ed-tooltip.directive';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, OverlayModule, EdTooltipDirective],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -49,23 +47,6 @@ export class AdminDashboardComponent implements OnInit {
     private toast: ToastService,
     public auth: AuthService
   ) { }
-
-  // someAdminAction() {
-  //   this.http.post(...).subscribe({
-  //     next: () => this.toast.success('Action completed'),
-  //     error: () => this.toast.error('Action failed')
-  //   });
-  // }
-
-  platformTooltip(platform: string): string {
-    switch ((platform || '').toLowerCase()) {
-      case 'email': return 'Email delivery (via connected email provider).';
-      case 'sms': return 'SMS delivery (via SMS gateway/provider).';
-      case 'whatsapp': return 'WhatsApp delivery (via WhatsApp integration).';
-      case 'telegram': return 'Telegram delivery (via Telegram bot/integration).';
-      default: return platform || '';
-    }
-  }
 
   ngOnInit() {
     this.loadAll();
