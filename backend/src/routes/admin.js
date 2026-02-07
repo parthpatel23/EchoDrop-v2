@@ -109,9 +109,16 @@ router.get("/users", async (req, res) => {
     }
 
     // Filter on messagesCount
-    if (hasMessages === "yes") {
+    const hm = String(req.query.hasMessages ?? "").toLowerCase().trim();
+
+    const hasMessagesNormalized =
+      (hm === "true" || hm === "1" || hm === "yes") ? true :
+        (hm === "false" || hm === "0" || hm === "no") ? false :
+          null; // null = no filter (all)
+
+    if (hasMessagesNormalized === true) {
       pipeline.push({ $match: { messagesCount: { $gt: 0 } } });
-    } else if (hasMessages === "no") {
+    } else if (hasMessagesNormalized === false) {
       pipeline.push({ $match: { messagesCount: 0 } });
     }
 
@@ -135,7 +142,7 @@ router.get("/users", async (req, res) => {
     const users = result[0].data || [];
     const total = result[0].totalCount[0]?.count || 0;
 
-    res.json({ 
+    res.json({
       users,
       total,
       page: pageNum,
@@ -200,17 +207,25 @@ router.patch("/users/:id/admin", async (req, res) => {
 // GET /admin/messages?status=failed&limit=50
 router.get("/messages", async (req, res) => {
   try {
-    const { status, limit = 50 } = req.query;
+    const { status, page = 1, limit = 20 } = req.query;
+
+    const pageNum = Math.max(parseInt(page) || 1, 1);
+    const pageSize = Math.max(parseInt(limit) || 20, 1);
+
     const filter = {};
     if (status) filter.status = status;
 
-    const messages = await ScheduledMessage.find(filter)
-      .populate("createdBy", "email name isAdmin")
-      .sort("-scheduledTime")
-      .limit(Number(limit))
-      .lean();
+    const [messages, total] = await Promise.all([
+      ScheduledMessage.find(filter)
+        .populate("createdBy", "email name isAdmin")
+        .sort("-scheduledTime")
+        .skip((pageNum - 1) * pageSize)
+        .limit(pageSize)
+        .lean(),
+      ScheduledMessage.countDocuments(filter),
+    ]);
 
-    res.json({ messages });
+    res.json({ messages, total, page: pageNum, limit: pageSize });
   } catch (err) {
     console.error("Admin messages error:", err);
     res.status(500).json({ msg: "Server error", error: err.message });

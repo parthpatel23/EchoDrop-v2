@@ -23,6 +23,9 @@ export class AdminDashboardComponent implements OnInit {
 
   stats: any = null;
   users: any[] = [];
+  failedPage = 1;
+  failedPageSize = 10;
+  failedTotal = 0;
   failedMessages: any[] = [];
 
   // --- Users filters & pagination ---
@@ -55,6 +58,33 @@ export class AdminDashboardComponent implements OnInit {
     this.loadAll();
   }
 
+  get failedTotalPages(): number {
+    return Math.max(Math.ceil(this.failedTotal / this.failedPageSize), 1);
+  }
+
+  goToFailedPage(page: number) {
+    if (page < 1 || page > this.failedTotalPages) return;
+    this.failedPage = page;
+    this.loadFailedMessages();
+  }
+
+  loadFailedMessages() {
+    const params: any = {
+      status: 'failed',
+      page: this.failedPage,
+      limit: this.failedPageSize
+    };
+
+    this.http.get<any>(`${this.API_URL}/messages`, { params }).subscribe({
+      next: (res) => {
+        this.failedMessages = res.messages || [];
+        this.failedTotal = res.total || 0;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('[Admin] messages error', err)
+    });
+  }
+
   get currentAdminEmail() {
     return this.auth.currentEmail;
   }
@@ -67,7 +97,9 @@ export class AdminDashboardComponent implements OnInit {
     const params: any = { page: this.userPage, limit: this.userPageSize };
 
     if (this.userSearch.trim()) params.search = this.userSearch.trim();
-    if (this.userHasMessages !== 'all') params.hasMessages = this.userHasMessages;
+    if (this.userHasMessages !== 'all') {
+      params.hasMessages = this.userHasMessages; // 'true' or 'false'
+    }
 
     console.log('GET', `${this.API_URL}/users`, params);
 
@@ -147,17 +179,7 @@ export class AdminDashboardComponent implements OnInit {
     this.loadUsers();
 
     // --- Failed messages ---
-    this.http
-      .get<any>(`${this.API_URL}/messages?status=failed&limit=50`)
-      .subscribe({
-        next: (res) => {
-          this.failedMessages = res.messages || [];
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('[Admin] messages error', err);
-        }
-      });
+    this.loadFailedMessages()
   }
 
   // Promote/demote owner/admin status
