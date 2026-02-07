@@ -114,10 +114,10 @@
 
     <!-- Filters row -->
     <div class="users-filters">
-      <input type="text" placeholder="Search by email or name" [(ngModel)]="userSearch"
-        (ngModelChange)="onUserSearchChange()" />
+      <input type="text" name="userSearch" autocomplete="off" placeholder="Search by email or name"
+        [(ngModel)]="userSearch" (input)="onUserSearchInput()" />
 
-      <select [(ngModel)]="userHasMessages" (change)="onHasMessagesChange($event.target.value)">
+      <select [(ngModel)]="userHasMessages" (ngModelChange)="onHasMessagesChange($event)">
         <option value="all">All users</option>
         <option value="yes">Has messages</option>
         <option value="no">No messages</option>

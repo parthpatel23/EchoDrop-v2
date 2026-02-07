@@ -27,7 +27,7 @@ export class AdminDashboardComponent implements OnInit {
 
   // --- Users filters & pagination ---
   userSearch = '';
-  userHasMessages: 'all' | 'yes' | 'no' = 'all';
+  userHasMessages: 'all' | 'true' | 'false' = 'all';
   userPage = 1;
   userPageSize = 10;
   userTotal = 0;
@@ -64,37 +64,47 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadUsers() {
-    const params: any = {
-      page: this.userPage,
-      limit: this.userPageSize
-    };
+    const params: any = { page: this.userPage, limit: this.userPageSize };
 
-    if (this.userSearch.trim()) {
-      params.search = this.userSearch.trim();
-    }
-    if (this.userHasMessages !== 'all') {
-      params.hasMessages = this.userHasMessages;
-    }
+    if (this.userSearch.trim()) params.search = this.userSearch.trim();
+    if (this.userHasMessages !== 'all') params.hasMessages = this.userHasMessages;
+
+    console.log('GET', `${this.API_URL}/users`, params);
 
     this.http.get<any>(`${this.API_URL}/users`, { params }).subscribe({
       next: (res) => {
+        console.log('users res =>', res);
         this.users = res.users || [];
         this.userTotal = res.total || 0;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('[Admin] users error', err);
+        this.error = err.error?.msg || 'Failed to load users';
+        this.cdr.detectChanges();
       }
     });
   }
 
-  onUserSearchChange() {
+  private searchTimer: any;
+
+  onUserSearchInput() {
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => {
+      this.userPage = 1;
+      this.loadUsers();
+    }, 300);
+  }
+
+  clearUserFilters() {
+    this.userSearch = '';
+    this.userHasMessages = 'all';
     this.userPage = 1;
     this.loadUsers();
   }
 
-  onHasMessagesChange(value: string) {
-    this.userHasMessages = value as any;
+  onHasMessagesChange(value: 'all' | 'true' | 'false') {
+    this.userHasMessages = value;
     this.userPage = 1;
     this.loadUsers();
   }

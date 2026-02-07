@@ -126,7 +126,7 @@ router.get("/users", async (req, res) => {
           { $limit: pageSize }
         ],
         totalCount: [
-          { $count: count }
+          { $count: "count" }
         ]
       }
     });
