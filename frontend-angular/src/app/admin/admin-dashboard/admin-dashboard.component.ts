@@ -1,5 +1,5 @@
 // AngularApp\EchoDrop-v2\frontend-angular\src\app\admin\admin-dashboard\admin-dashboard.component.ts
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
@@ -14,7 +14,9 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
+  private refreshInterval: any;
+
   // API_URL = 'https://echodrop-backend.onrender.com/admin';
   API_URL = `${environment.apiBaseUrl}/admin`;
 
@@ -50,6 +52,18 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadAll();
+
+    // Auto refresh every 30 seconds
+    this.refreshInterval = setInterval(() => {
+      this.loadStats();
+      this.loadFailedMessages();
+    }, 30000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   onStatsRangeChange(range: any) {
@@ -227,6 +241,7 @@ export class AdminDashboardComponent implements OnInit {
           this.toast.success(
             `User ${makeAdmin ? 'promoted to' : 'removed from'} admin`
           );
+          this.loadUsers();
           this.cdr.detectChanges();
           this.closeRoleConfirm();
         },

@@ -1,4 +1,4 @@
-// AngularApp\echodrop\backend\src\config\passport.js
+// AngularApp\EchoDrop-v2\backend\src\config\passport.js
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -6,11 +6,12 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import User from "../models/User.js";
 
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
+
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  // {callbackURL: process.env.GOOGLE_REDIRECT_URI || "http://localhost:5000/auth/google/callback",}
-  callbackURL: process.env.GOOGLE_REDIRECT_URI || "https://echodrop-backend.onrender.com/auth/google/callback",
+  callbackURL: `${BASE_URL}/auth/google/callback`,
   passReqToCallback: true // IMPORTANT: Allows us to access req in the callback
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {

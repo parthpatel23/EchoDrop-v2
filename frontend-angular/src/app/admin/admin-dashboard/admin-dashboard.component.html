@@ -67,7 +67,7 @@
     <div class="admin-section__header">
       <h2>Recent Failed Messages</h2>
       <span class="admin-section__badge">
-        {{ failedMessages.length }} shown
+        {{ failedTotal}} total
       </span>
     </div>
 
@@ -96,6 +96,21 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Failed Messages Pagination -->
+    <div *ngIf="failedTotalPages > 1" class="users-pagination">
+      <button type="button" (click)="goToFailedPage(failedPage - 1)" [disabled]="failedPage === 1">
+        ‹ Prev
+      </button>
+
+      <span>
+        Page {{ failedPage }} of {{ failedTotalPages }}
+      </span>
+
+      <button type="button" (click)="goToFailedPage(failedPage + 1)" [disabled]="failedPage === failedTotalPages">
+        Next ›
+      </button>
     </div>
 
     <p *ngIf="!loading && failedMessages.length === 0 && !error" class="empty-hint">

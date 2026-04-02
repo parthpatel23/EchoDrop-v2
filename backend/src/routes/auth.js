@@ -1,4 +1,4 @@
-// AngularApp\echodrop\backend\src\routes\auth.js
+// AngularApp\EchoDrop-v2\backend\src\routes\auth.js
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -115,6 +115,7 @@ router.get(
 
     // Redirect with JWT token
     res.redirect(`${FRONTEND_URL}/dashboard?token=${token}`);
+    // res.redirect(`${FRONTEND_URL}/oauth-success#token=${token}`);
   }
 );
 
@@ -158,30 +159,59 @@ router.get(
 /* -------------------------
    📌 Get Current User
 ------------------------- */
-router.get("/me", async (req, res) => {
+// router.get("/me", requireAuth, async (req, res) => {
+//   try {
+//     // const header = req.headers.authorization;
+//     // if (!header) return res.status(401).json({ msg: "No token" });
+
+//     // const token = header.split(" ")[1];
+//     // const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     // const user = await User.findById(decoded.id).select("-password");
+//     // if (!user) return res.status(404).json({ msg: "User not found" });
+
+//     const user = await User.findById(req.user.id).select("-password");
+
+//     if (!user) {
+//       return res.status(404).json({ msg: "User not found" });
+//     }
+
+//     res.json({
+//       id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       profilePicture: user.profilePicture,
+//       defaultChannel: user.defaultChannel || 'email',
+//       googleLinked: !!user.googleRefreshToken,   // ✅ based on refresh token
+//       // ✅ Telegram is considered globally configured, not per-user
+//       telegramLinked: !!process.env.TELEGRAM_BOT_TOKEN && !!process.env.TELEGRAM_ADMIN_CHAT_ID,
+//     });
+//   } catch (err) {
+//     console.error("GET /auth/me error:", err.message);
+//     res.status(401).json({ msg: "Invalid token" });
+//   }
+// });
+
+router.get("/me", requireAuth, async (req, res) => {
   try {
-    const header = req.headers.authorization;
-    if (!header) return res.status(401).json({ msg: "No token" });
 
-    const token = header.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(404).json({ msg: "User not found" });
+    const user = req.user;
 
     res.json({
       id: user._id,
       name: user.name,
       email: user.email,
       profilePicture: user.profilePicture,
-      defaultChannel: user.defaultChannel || 'email',
-      googleLinked: !!user.googleRefreshToken,   // ✅ based on refresh token
-      // ✅ Telegram is considered globally configured, not per-user
-      telegramLinked: !!process.env.TELEGRAM_BOT_TOKEN && !!process.env.TELEGRAM_ADMIN_CHAT_ID,
+      defaultChannel: user.defaultChannel || "email",
+      googleLinked: !!user.googleRefreshToken,
+      telegramLinked:
+        !!process.env.TELEGRAM_BOT_TOKEN &&
+        !!process.env.TELEGRAM_ADMIN_CHAT_ID
     });
+
   } catch (err) {
     console.error("GET /auth/me error:", err.message);
-    res.status(401).json({ msg: "Invalid token" });
+    res.status(500).json({ msg: "Server error" });
   }
 });
 
