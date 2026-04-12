@@ -1,20 +1,11 @@
 // AngularApp\EchoDrop-v2\frontend-angular\src\app\guards\admin.guard.ts
-import { Injectable } from '@angular/core';
-import {
-  CanActivate,
-  Router,
-  UrlTree
-} from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-@Injectable({ providedIn: 'root' })
-export class AdminGuard implements CanActivate {
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) {}
+export const AdminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
 
-  canActivate(): boolean | UrlTree {
-    return this.auth.isAdmin ? true : this.router.parseUrl('/dashboard');
-  }
-}
+  return auth.isAdmin ? true : router.parseUrl('/dashboard');
+};

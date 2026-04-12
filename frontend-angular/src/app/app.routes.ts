@@ -24,5 +24,6 @@ export const routes: Routes = [
   { path: 'terms', component: TermsAndConditionsComponent },
   { path: 'contact', component: ContactUsComponent },
   { path: 'schedule', component: ScheduleMessageComponent, canActivate: [AuthGuard] },
-  { path: 'messages', component: MessagesListComponent, canActivate: [AuthGuard] }
+  { path: 'messages', component: MessagesListComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: '/login' }
 ];

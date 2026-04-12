@@ -33,6 +33,14 @@ router.post("/signup", async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     if (!email || !password) return res.status(400).json({ msg: "Missing email or password" });
 
+    // Password strength validation
+    if (password.length < 8) {
+      return res.status(400).json({ msg: "Password must be at least 8 characters long" });
+    }
+    if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+      return res.status(400).json({ msg: "Password must contain uppercase, lowercase, and a number" });
+    }
+
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: "User already exists" });
 

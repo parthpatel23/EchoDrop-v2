@@ -87,10 +87,10 @@ export class MessagesListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadMessages();
 
-    // 🔄 Automatically refresh messages every 5 seconds
+    // 🔄 Automatically refresh messages every 20 seconds
     this.refreshInterval = setInterval(() => {
       this.loadMessages(false); // refresh silently, keep current filter
-    }, 5000);
+    }, 20000);
 
     // Listen for route changes to refresh when navigating to this page
     this.routerSubscription = this.router.events

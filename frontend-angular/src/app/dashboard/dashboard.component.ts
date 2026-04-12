@@ -110,6 +110,7 @@ export class DashboardComponent implements OnInit {
   }
 
   linkGoogleAccount() {
-    window.location.href = `${this.API_URL}/auth/google`;
+    const token = this.auth.getToken();
+    window.location.href = `${this.API_URL}/auth/google/link?token=${token}`;
   }
 }
